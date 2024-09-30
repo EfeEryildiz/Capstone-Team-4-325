@@ -43,7 +43,3 @@ Users require a digital flashcard app with secure cloud storage, allowing access
   - **IntelliJ IDEA** for development.
   - **Firebase Console** for managing authentication and database.
   - **JavaFX SceneBuilder** for interface design.
-
-## Future Enhancements
-- **Whiteboard Feature**: A collaborative whiteboard for drawing or diagram-based learning.
-- **Web App**: Extending the tool to a web-based application for broader accessibility.
