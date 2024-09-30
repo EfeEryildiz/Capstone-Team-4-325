@@ -1,18 +1,49 @@
-# Capstone-Team-4-325
-Steven Buruca
-Efe Eryildiz 
-Omar Shaker
-Richard Sheridan
+# Flashcard Study Tool
 
-For our Capstone project, we will create a digital journaling application, providing users with a secure & customizable journal that supports features such as password protection, font choices, paper styles, and light/dark mode. Future scalability will also be included, with the potential to display a whiteboard feature. 
-If there is enough time, a web app will also be developed, as an enhancement, to provide an interactive interface for users to engage with the project's functionality. If not, the project will focus on completing the necessary features without including the web app component.
+### Team Members:
+- Efe Eryildiz
+- Steven Buruca
+- Omar Shaker
+- Richard Sheridan
 
-WRSPM Analysis
+## Overview
+The Flashcard Study Tool is a Java-based application designed to help users create, manage, and study flashcards. The tool includes Firebase integration for user authentication and real-time data storage, allowing users to securely save their flashcards and access them across devices.
 
-World Assumptions: Assume that users are searching for a digital journal app that can balance functionality and convenience, with digital tools growing rapidly.
+## Features
+- **Create Flashcards**: Add, edit, or delete flashcards organized into decks.
+- **Quiz Mode**: Test knowledge with randomized flashcards.
+- **Firebase Integration**: Users can sign in, and flashcard data is stored securely in Firebase.
+- **Progress Tracking**: View performance during quizzes and track learning progress across sessions.
 
-User Requirements: Journal entries will have password protection and encryption. The application will provide several customization options, such as different fonts, paper styles, and light/dark mode themes.
+## World Assumptions
+Users require a digital flashcard app with secure cloud storage, allowing access across devices. They expect a responsive and interactive user experience, and the app assumes access to the internet for Firebase services.
 
-Specifications & Interface Needs: The application will use JavaFx for the UI, with FXML & SceneBuilder helping with a responsive design. The database will manage user accounts and journal entries securely.
+## User Requirements
+- **Authentication**: Users must sign in via Firebase for secure access to their flashcards.
+- **Flashcard Management**: Create, edit, and delete flashcard sets.
+- **Data Sync**: Flashcards must be stored in Firebase, allowing for cross-device accessibility.
+- **Customization**: Users can manage multiple flashcard decks and track quiz progress.
+- **Data Persistence**: All flashcards and progress data are stored securely in Firebase’s real-time database.
 
-Program & Hardware: Development will consist of IntelliJ, with JavaFx and SceneBuilder for application design. The final version pre-deployment will need testing on both macOS & Windows.
+## Specifications & Interface
+- **UI**: Built using JavaFX for the graphical interface. Firebase handles back-end data storage and user authentication.
+- **Screens**:
+  - **Main Dashboard**: Manage flashcard sets.
+  - **Flashcard Creation Screen**: Create and edit flashcards.
+  - **Quiz Mode**: Randomly presents flashcards for quizzing.
+- **Firebase Features**:
+  - **Authentication**: Users sign up and log in with Firebase Authentication.
+  - **Database**: Firebase Realtime Database stores flashcards, which are accessible across devices.
+  
+## Program & Hardware Requirements
+- **Development**: Built using Java, JavaFX, and Firebase.
+- **Firebase SDK**: Used for Authentication and Realtime Database.
+- **Hardware**: Runs on any PC that supports Java.
+- **Tools**:
+  - **IntelliJ IDEA** for development.
+  - **Firebase Console** for managing authentication and database.
+  - **JavaFX SceneBuilder** for interface design.
+
+## Future Enhancements
+- **Whiteboard Feature**: A collaborative whiteboard for drawing or diagram-based learning.
+- **Web App**: Extending the tool to a web-based application for broader accessibility.
