@@ -3,6 +3,8 @@ package org.example.studystack;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+
 import java.io.IOException;
 
 public class MainController {
@@ -27,8 +29,8 @@ public class MainController {
     // Load the Quiz Mode page
     @FXML
     private void loadQuizModePage() throws IOException {
-        BorderPane quizModePane = FXMLLoader.load(getClass().getResource("QuizMode.fxml"));
-        contentPane.setCenter(quizModePane);
+        VBox quizModePane = FXMLLoader.load(getClass().getResource("QuizMode.fxml"));
+        contentPane.setCenter(quizModePane);  // This works because contentPane is a BorderPane
     }
 
     // Load the Notebook page
