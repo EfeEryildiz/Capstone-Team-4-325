@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.QuizModeController">
+    <center>
+        <Text text="This is the Quiz Mode section" />
+    </center>
+</BorderPane>
+
