@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.MainController">
+  <!-- Navigation bar on the left -->
+  <left>
+    <VBox spacing="10" style="-fx-background-color: #2C3E50;" alignment="TOP_CENTER" prefWidth="150">
+      <children>
+        <Button fx:id="homeButton" text="Home" onAction="#loadHomePage" prefWidth="130" />
+        <Button fx:id="flashcardsButton" text="Flashcards" onAction="#loadFlashcardsPage" prefWidth="130" />
+        <Button fx:id="quizModeButton" text="Quiz Mode" onAction="#loadQuizModePage" prefWidth="130" />
+        <Button fx:id="notebookButton" text="Notebook" onAction="#loadNotebookPage" prefWidth="130" />
+      </children>
+    </VBox>
+  </left>
+
+  <!-- Content area where each page will be loaded -->
+  <center>
+    <BorderPane fx:id="contentPane" style="-fx-background-color: #ECF0F1;" />
+  </center>
+</BorderPane>
