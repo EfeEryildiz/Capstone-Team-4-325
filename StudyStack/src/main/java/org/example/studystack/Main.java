@@ -1,6 +1,5 @@
 package org.example.studystack;
 
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -13,10 +12,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("MainView.fxml"));
+        // Load the Login.fxml file instead of MainView.fxml
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Login.fxml"));
         BorderPane root = loader.load();
-        Scene scene = new Scene(root, 800, 600);
-        primaryStage.setTitle("Navigation App");
+
+        // Set the scene with Login layout
+        Scene scene = new Scene(root, 600, 400);
+        primaryStage.setTitle("Login Screen");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
