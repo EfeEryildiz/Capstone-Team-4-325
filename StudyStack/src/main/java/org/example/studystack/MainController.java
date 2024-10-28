@@ -15,7 +15,7 @@ public class MainController {
     // Load the Home page
     @FXML
     private void loadHomePage() throws IOException {
-        BorderPane homePane = FXMLLoader.load(getClass().getResource("Home.fxml"));
+        VBox homePane = FXMLLoader.load(getClass().getResource("Home.fxml"));
         contentPane.setCenter(homePane);
     }
 
