@@ -1,23 +1,23 @@
 package org.example.studystack;
 
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) throws Exception {
+        // Load the Home.fxml file
         FXMLLoader loader = new FXMLLoader(getClass().getResource("MainView.fxml"));
-        BorderPane root = loader.load();
-        Scene scene = new Scene(root, 800, 600);
-        primaryStage.setTitle("Navigation App");
+        Parent root = loader.load();
+
+        // Set up the scene
+        Scene scene = new Scene(root);
         primaryStage.setScene(scene);
+        primaryStage.setTitle("StudySync");
         primaryStage.show();
     }
 
@@ -25,3 +25,4 @@ public class Main extends Application {
         launch(args);
     }
 }
+

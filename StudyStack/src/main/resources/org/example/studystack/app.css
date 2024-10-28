@@ -1,0 +1,95 @@
+/* General Styles */
+.root {
+    -fx-font-family: 'Arial';
+}
+
+/* Top Bar */
+.top-bar {
+    -fx-background-color: #b0c4de;
+    -fx-padding: 10px;
+    -fx-alignment: center;
+    -fx-border-width: 0 0 1px 0;
+    -fx-border-color: #333;
+}
+
+.app-title {
+    -fx-font-size: 24px;
+    -fx-text-fill: #333;
+    -fx-font-weight: bold;
+}
+
+/* Buttons in Top Bar */
+.sign-in, .register {
+    -fx-background-color: #dcdcdc;
+    -fx-text-fill: #333;
+    -fx-padding: 5px 10px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+
+}
+
+.sign-in:hover, .register:hover {
+    -fx-background-color: #bcbcbc;
+}
+
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+    -fx-shape: "M0 2v20h24V2H0zm22 2v16H2V4h20zM4 6v12h16V6H4z";
+}
+
+/* Navigation Bar */
+.nav-bar {
+    -fx-background-color: #a2d5c6;
+    -fx-padding: 15px;
+    -fx-pref-width: 150px;
+}
+
+.nav-button {
+    -fx-background-color: #dff0d8;
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+    -fx-padding: 10px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+}
+
+.nav-button:hover {
+    -fx-background-color: #b3e0a8;
+}
+
+/* Main Content Area */
+.content-area {
+    -fx-background-color: #4a4a4a;
+    -fx-background-radius: 0px;
+    -fx-padding: 0px;
+}
+
+.content-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 20px;
+}
+
+/* Home Page Styles */
+.home-description {
+    -fx-font-size: 16px;
+    -fx-text-fill: #333;
+    -fx-padding: 0 20 0 20;
+    -fx-alignment: center;
+    -fx-wrap-text: true;
+}
+
+.login-button, .create-account-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: #fff;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 5px;
+}
+
+.login-button:hover, .create-account-button:hover {
+    -fx-background-color: #45A049;
+}
+
+
+
