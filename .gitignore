@@ -25,6 +25,5 @@ replay_pid*
 
 # Key file
 key.json
-
 # Ignore specific key file
-/src/main/resources/org/example/studystack/key.json
+src/main/resources/org/example/studystack/key.json
