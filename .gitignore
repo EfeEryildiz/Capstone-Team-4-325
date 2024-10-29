@@ -23,6 +23,8 @@
 hs_err_pid*
 replay_pid*
 
-# .gitignore
-# Ignore key.json
+# Key file
+key.json
+
+# Ignore specific key file
 /src/main/resources/org/example/studystack/key.json
