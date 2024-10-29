@@ -35,7 +35,7 @@ public class OpenAIAPIController {
     //Method to generate flashcards from notes
     public static List<Flashcard> generateFlashcards(String noteContent) throws IOException, InterruptedException {
         //Prepare the prompt with this formatting
-        String prompt = "Convert the following notes into flashcards. Each flashcard should have a question and an answer.\n\n" +
+        String prompt = "Convert the following notes into flashcards. Each flashcard should have a question and an answer.  Match the following format exactly, brackets too\n\n" +
                 "Format each flashcard as follows:\n" +
                 "Q: [Your question here]\n" +
                 "A: [Your answer here]\n\n" +
@@ -99,7 +99,7 @@ public class OpenAIAPIController {
 
     //Method to generate multiple choice options
     public static List<String> generateMultipleChoiceOptions(String question, String correctAnswer) throws IOException, InterruptedException {
-        String prompt = "This is a multiple choice question, so create three incorrect but plausible answers for the following question, and include the correct answer as one of the options.\n\n" +
+        String prompt = "This is a multiple choice question, so create three incorrect but plausible answers for the following question, and include the correct answer as one of the options.  Make sure there are FOUR options/choices in total no matter what.  Thanks\n\n" +
                 "Question: " + question + "\n" +
                 "Correct Answer: " + correctAnswer + "\n\n" +
                 "Options (in JSON array format):";
@@ -130,7 +130,7 @@ public class OpenAIAPIController {
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        //Log the response status and body for debugging
+        //Log the response status and body for debugging (MCQ = Multiple Choice Question)
         System.out.println("OpenAI API (MCQ) Response Status Code: " + response.statusCode());
         System.out.println("OpenAI API (MCQ) Response Body: " + response.body());
 
