@@ -22,8 +22,9 @@ public class MainController {
     // Load the Flashcards page
     @FXML
     private void loadFlashcardsPage() throws IOException {
-        BorderPane flashcardsPane = FXMLLoader.load(getClass().getResource("Flashcards.fxml"));
-        contentPane.setCenter(flashcardsPane);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Flashcards.fxml"));
+        VBox pane = (VBox) loader.load();
+        contentPane.setCenter(pane);
     }
 
     // Load the Quiz Mode page
@@ -36,8 +37,9 @@ public class MainController {
     // Load the Notebook page
     @FXML
     private void loadNotebookPage() throws IOException {
-        BorderPane notebookPane = FXMLLoader.load(getClass().getResource("Notebook.fxml"));
-        contentPane.setCenter(notebookPane);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("Notebook.fxml"));
+        VBox pane = (VBox) loader.load();
+        contentPane.setCenter(pane);
     }
 }
 
