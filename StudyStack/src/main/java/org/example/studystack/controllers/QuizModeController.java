@@ -1,4 +1,4 @@
-package org.example.studystack;
+package org.example.studystack.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;

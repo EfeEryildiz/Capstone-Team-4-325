@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 
-<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.HomeController">
+<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.controllers.HomeController">
 
     <!-- Description Text -->
     <Label text="Welcome to StudySync! This app helps you create flashcards, take quizzes, and organize notes for efficient studying." wrapText="true" styleClass="home-description"/>

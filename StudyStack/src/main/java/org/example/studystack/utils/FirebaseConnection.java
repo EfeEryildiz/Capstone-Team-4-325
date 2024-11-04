@@ -1,4 +1,4 @@
-package org.example.studystack;
+package org.example.studystack.utils;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -19,7 +19,6 @@ public class FirebaseConnection {
                     .setDatabaseUrl("https://capstone-team-4-e2207-default-rtdb.firebaseio.com")
                     .build();
 
-            FirebaseApp firebaseApp;
             FirebaseApp.initializeApp(options);
         } catch (IOException e) {
             e.printStackTrace();

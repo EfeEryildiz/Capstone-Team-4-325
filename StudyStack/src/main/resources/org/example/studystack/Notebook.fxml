@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.NotebookController">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.controllers.NotebookController">
     <center>
         <Text text="This is the Notebook section" />
     </center>

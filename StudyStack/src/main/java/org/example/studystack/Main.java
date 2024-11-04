@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.example.studystack.controllers.ProgressViewController;
+import org.example.studystack.utils.FirebaseConnection;
 
 public class Main extends Application {
 
@@ -19,6 +21,10 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("StudySync");
         primaryStage.show();
+
+        // Show the Progress View (UI setup)
+        ProgressViewController progressView = new ProgressViewController();
+        progressView.show(primaryStage);
     }
 
     public static void main(String[] args) {
@@ -26,4 +32,3 @@ public class Main extends Application {
         launch(args);
     }
 }
-

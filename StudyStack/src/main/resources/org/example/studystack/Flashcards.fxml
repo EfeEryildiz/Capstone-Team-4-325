@@ -3,7 +3,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.FlashcardsController">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.controllers.FlashcardsController">
     <center>
         <Text text="This is the Flashcards section" />
     </center>
