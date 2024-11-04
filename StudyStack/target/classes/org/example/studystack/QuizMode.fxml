@@ -10,7 +10,7 @@
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.QuizModeController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
     <children>
         <HBox spacing="10" alignment="CENTER">
-            <Label text="Select Deck:" />
+            <Label fx:id="SelectText" text="Select Deck:" />
             <ComboBox fx:id="deckComboBox" prefWidth="200" />
             <Button fx:id="startQuizButton" text="Start Quiz" onAction="#handleStartQuiz" />
         </HBox>

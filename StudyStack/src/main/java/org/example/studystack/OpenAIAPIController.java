@@ -35,7 +35,7 @@ public class OpenAIAPIController {
     //Method to generate flashcards from notes
     public static List<Flashcard> generateFlashcards(String noteContent) throws IOException, InterruptedException {
         //Prepare the prompt with this formatting
-        String prompt = "Convert the following notes into flashcards. Each flashcard should have a question and an answer.  Match the following format exactly, brackets too\n\n" +
+        String prompt = "Convert the following notes into flashcards. Each flashcard should have a question and an answer.  Match the following format exactly, including the brackets, \n\n" +
                 "Format each flashcard as follows:\n" +
                 "Q: [Your question here]\n" +
                 "A: [Your answer here]\n\n" +

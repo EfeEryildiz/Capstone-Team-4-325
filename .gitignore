@@ -29,4 +29,8 @@ src/main/resources/config.properties
 resources/config.properties
 **/resources/config.properties
 
-
+src/main/resources/Key.json
+Key.json
+StudyStack/src/main/resources/Key.json
+**/Key.json
+**/resources/Key.json
