@@ -8,6 +8,8 @@ module org.example.studystack {
     requires com.google.api.apicommon;
     requires com.google.api.client;
     requires com.google.api.client.auth;
+    requires java.net.http;
+    requires org.json;
 
 
     opens org.example.studystack to javafx.fxml;

@@ -73,7 +73,7 @@
 /* Home Page Styles */
 .home-description {
     -fx-font-size: 16px;
-    -fx-text-fill: #333;
+    -fx-text-fill: #bcbcbc;
     -fx-padding: 0 20 0 20;
     -fx-alignment: center;
     -fx-wrap-text: true;
@@ -89,6 +89,13 @@
 
 .login-button:hover, .create-account-button:hover {
     -fx-background-color: #45A049;
+}
+
+/*Quiz question label*/
+#questionLabel,
+#SelectText
+{
+    -fx-text-fill: #bcbcbc;
 }
 
 

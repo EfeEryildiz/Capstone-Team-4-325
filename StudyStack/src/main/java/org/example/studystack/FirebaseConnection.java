@@ -12,7 +12,7 @@ public class FirebaseConnection {
     public static void initialize() {
         try {
             FileInputStream serviceAccount =
-                    new FileInputStream("StudyStack/src/main/resources/org/example/studystack/key.json");
+                    new FileInputStream("StudyStack/src/main/resources/Key.json");
 
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
