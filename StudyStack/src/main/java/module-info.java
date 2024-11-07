@@ -18,4 +18,6 @@ module org.example.studystack {
     opens org.example.studystack.controllers to javafx.fxml;
     exports org.example.studystack.utils;
     opens org.example.studystack.utils to javafx.fxml;
+    exports org.example.studystack.models;
+    opens org.example.studystack.models to javafx.fxml;
 }

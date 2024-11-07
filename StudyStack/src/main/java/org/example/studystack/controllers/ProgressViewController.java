@@ -1,5 +1,7 @@
 package org.example.studystack.controllers;
 
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import org.example.studystack.utils.FirebaseAnalytics;
 import org.example.studystack.utils.QuizResult;
 import javafx.geometry.Insets;
@@ -21,8 +23,52 @@ public class ProgressViewController {
     private LineChart<Number, Number> progressChart;
     private FirebaseAnalytics firebaseAnalytics = new FirebaseAnalytics();
 
-    public void show(Stage primaryStage) {
+    public void show(Stage stage) {
+        try {
+            setupUI(stage);
+
+            // Initialize Firebase Analytics
+            firebaseAnalytics = new FirebaseAnalytics();
+
+            // Use Platform.runLater to ensure JavaFX thread safety
+            Platform.runLater(() -> {
+                firebaseAnalytics.fetchQuizResultsSync(results -> {
+                    if (results.isEmpty()) {
+                        updateUIForNoData();
+                    } else {
+                        populateStatistics(results);
+                    }
+                });
+            });
+
+        } catch (Exception e) {
+            System.err.println("Error in ProgressViewController: " + e.getMessage());
+            showError("Error", "Failed to initialize progress view: " + e.getMessage());
+        }
+    }
+
+    private void updateUIForNoData() {
+        Platform.runLater(() -> {
+            averageAccuracyLabel.setText("Average Accuracy: No data available");
+            totalQuizzesLabel.setText("Total Quizzes Taken: 0");
+            totalTimeSpentLabel.setText("Total Time Spent: 0s");
+            progressChart.getData().clear();
+        });
+    }
+
+    private void showError(String title, String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(title);
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
+    }
+    private void setupUI(Stage primaryStage) {
         VBox root = new VBox(10);
+        root.setPadding(new Insets(10));
+        root = new VBox(10);
         root.setPadding(new Insets(10));
 
         // Labels for statistics
