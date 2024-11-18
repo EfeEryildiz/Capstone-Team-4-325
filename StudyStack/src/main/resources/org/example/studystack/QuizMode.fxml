@@ -7,22 +7,27 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.QuizModeController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.QuizModeController" spacing="20" alignment="CENTER" styleClass="quiz-mode-container" stylesheets="@app.css">
+
     <children>
+        <!-- Header Section -->
         <HBox spacing="10" alignment="CENTER">
-            <Label fx:id="SelectText" text="Select Deck:" />
-            <ComboBox fx:id="deckComboBox" prefWidth="200" />
-            <Button fx:id="startQuizButton" text="Start Quiz" onAction="#handleStartQuiz" />
+            <Label fx:id="SelectText" text="Select Deck:" styleClass="select-deck-label" />
+            <ComboBox fx:id="deckComboBox" prefWidth="200" styleClass="combo-box" />
+            <Button fx:id="startQuizButton" text="Start Quiz" onAction="#handleStartQuiz" styleClass="modern-button" />
         </HBox>
-        <VBox fx:id="quizVBox" spacing="10" alignment="CENTER">
-            <Label fx:id="questionLabel" text="Question will appear here" wrapText="true" />
-            <ScrollPane fitToWidth="true" prefHeight="200.0">
+
+        <!-- Quiz Content Section -->
+        <VBox fx:id="quizVBox" spacing="20" alignment="CENTER">
+            <Label fx:id="questionLabel" text="Question will appear here" wrapText="true" styleClass="question-label" />
+            <ScrollPane fitToWidth="true" prefHeight="200.0" styleClass="modern-scroll-pane">
                 <content>
-                    <VBox fx:id="optionsVBox" spacing="5" />
+                    <VBox fx:id="optionsVBox" spacing="10" styleClass="options-container" />
                 </content>
             </ScrollPane>
-            <Button fx:id="submitButton" text="Submit Answer" onAction="#handleSubmitAnswer" />
-            <Label fx:id="feedbackLabel" text="" wrapText="true" />
+            <Button fx:id="submitButton" text="Submit Answer" onAction="#handleSubmitAnswer" styleClass="modern-button" />
+            <Label fx:id="feedbackLabel" text="" wrapText="true" styleClass="feedback-label" />
         </VBox>
     </children>
 </VBox>
+

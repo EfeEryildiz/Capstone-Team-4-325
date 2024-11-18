@@ -10,11 +10,12 @@
 
   <!-- Top Header -->
   <top>
-    <HBox prefHeight="79.0" prefWidth="551.0" spacing="20" styleClass="top-bar">
+    <HBox prefHeight="79.0" prefWidth="551.0" spacing="20" styleClass="app-header">
       <children>
         <Label styleClass="app-title" text="StudySync" />
       </children>
     </HBox>
+
   </top>
 
   <!-- Left Navigation -->
