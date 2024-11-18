@@ -6,17 +6,29 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.NotebookController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.NotebookController" spacing="20" alignment="CENTER" styleClass="notebook-container">
     <children>
-        <HBox spacing="10" alignment="CENTER">
-            <Button text="New Note" onAction="#handleNewNote" fx:id="newNoteButton" />
-            <Button text="Delete Note" onAction="#handleDeleteNote" fx:id="deleteNoteButton" />
-            <Button text="Convert to Flashcards" onAction="#handleConvertToFlashcards" fx:id="convertToFlashcardsButton" />
+        <!-- Button Section -->
+        <HBox spacing="15" alignment="CENTER" styleClass="button-container">
+            <Button text="New Note" onAction="#handleNewNote" fx:id="newNoteButton" styleClass="modern-button" />
+            <Button text="Delete Note" onAction="#handleDeleteNote" fx:id="deleteNoteButton" styleClass="modern-button" />
+            <Button text="Convert to Flashcards" onAction="#handleConvertToFlashcards" fx:id="convertToFlashcardsButton" styleClass="modern-button" />
         </HBox>
-        <HBox spacing="10" alignment="CENTER">
-            <ListView fx:id="notesListView" prefWidth="200" prefHeight="300" />
-            <TextArea fx:id="noteTextArea" prefWidth="400" prefHeight="300" wrapText="true" />
+
+        <!-- Content Section -->
+        <HBox spacing="20" alignment="TOP_CENTER" styleClass="content-area">
+            <!-- Notes List -->
+            <VBox spacing="10" styleClass="notes-list-container">
+                <ListView fx:id="notesListView" prefWidth="200" prefHeight="400" styleClass="notes-list" />
+            </VBox>
+
+            <!-- Note Content -->
+            <VBox spacing="10" styleClass="note-content-container">
+                <TextArea fx:id="noteTextArea" prefWidth="400" prefHeight="400" wrapText="true" styleClass="note-content-area" />
+            </VBox>
         </HBox>
     </children>
 </VBox>
+
+
 

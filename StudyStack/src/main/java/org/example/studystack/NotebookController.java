@@ -229,9 +229,10 @@ public class NotebookController {
                 }
             }
 
-            Platform.runLater(() -> { //Use thread to handle flashcard conversion process in background so it does not block the rest of the application.
-                dialog.close();
+            Platform.runLater(() -> {
+                dialog.close(); // Ensure the loading dialog is closed
 
+                // Build the conversion results message
                 StringBuilder message = new StringBuilder();
                 message.append("Conversion Completed!\n");
                 message.append("Successful: ").append(successCount.get()).append("\n");
@@ -244,12 +245,26 @@ public class NotebookController {
                     }
                 }
 
-//                Alert alert = new Alert(Alert.AlertType.INFORMATION); //Old debug stuff
-//                alert.setTitle("Conversion Results");
-//                alert.setHeaderText(null);
-//                alert.setContentText(message.toString());
-//                alert.showAndWait();
+                // Debugging: Print message to console
+                System.out.println("Conversion Results: \n" + message);
+
+                // Show results in an alert dialog
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Conversion Results");
+                alert.setHeaderText("Notes to Flashcards Conversion Summary");
+                alert.setContentText(message.toString());
+
+                // Make the dialog expandable for long content
+                TextArea expandableContent = new TextArea(message.toString());
+                expandableContent.setEditable(false);
+                expandableContent.setWrapText(true);
+                alert.getDialogPane().setExpandableContent(new VBox(expandableContent));
+
+                // Show the alert
+                alert.showAndWait();
             });
+
+
         }).start(); //Start the background thread
 
         dialog.showAndWait();

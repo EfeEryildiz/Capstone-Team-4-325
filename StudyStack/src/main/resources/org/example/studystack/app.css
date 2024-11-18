@@ -3,8 +3,8 @@
     -fx-font-family: 'Arial';
 }
 
-/* Top Bar */
-.top-bar {
+/* Header Background */
+.app-header {
     -fx-background-color: #b0c4de;
     -fx-padding: 10px;
     -fx-alignment: center;
@@ -12,11 +12,16 @@
     -fx-border-color: #333;
 }
 
+/* Header Title */
 .app-title {
     -fx-font-size: 24px;
     -fx-text-fill: #333;
     -fx-font-weight: bold;
+
 }
+
+
+
 
 /* Buttons in Top Bar */
 .sign-in, .register {
@@ -97,6 +102,162 @@
 {
     -fx-text-fill: #bcbcbc;
 }
+/* General Button Style */
+.modern-button {
+    -fx-background-color: linear-gradient(to bottom, #4CAF50, #388E3C);
+    -fx-text-fill: white;
+    -fx-font-family: "Arial";
+    -fx-font-size: 16px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 25;
+    -fx-border-radius: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0, 0, 2);
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 2;
+}
+
+.modern-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #66BB6A, #43A047);
+    -fx-border-color: #ffffff;
+}
+
+.modern-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #388E3C, #2E7D32);
+    -fx-effect: innershadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 2);
+}
+/* Quiz Mode Container Background */
+.quiz-mode-container {
+    -fx-background-color: #4a4a4a; /* Solid dark gray */
+    -fx-padding: 20;
+    -fx-border-radius: 10; /* Optional rounded corners */
+    -fx-background-radius: 10;
+}
+
+/* General Label Styling */
+.select-deck-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff; /* White text for contrast */
+}
+
+.question-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff; /* White text for visibility */
+}
+
+.feedback-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #66bb6a; /* Light green for feedback */
+}
+
+/* ComboBox Styling */
+.combo-box {
+    -fx-background-color: #ffffff; /* White background */
+    -fx-border-color: #cccccc; /* Light gray border */
+    -fx-border-radius: 5;
+    -fx-padding: 5;
+}
+
+/* Buttons */
+.modern-button {
+    -fx-background-color: #66bb6a; /* Green */
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-border-radius: 25;
+    -fx-background-radius: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
+    -fx-cursor: hand;
+}
+
+.modern-button:hover {
+    -fx-background-color: #81c784; /* Lighter green on hover */
+}
+
+.modern-button:pressed {
+    -fx-background-color: #388e3c; /* Darker green when pressed */
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.3), 4, 0, 0, 2);
+}
+
+/* ScrollPane */
+.modern-scroll-pane {
+    -fx-background-color: #ffffff; /* Clean white background */
+    -fx-border-color: #dddddd; /* Light border */
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Notebook Container */
+.notebook-container {
+    -fx-padding: 20;
+    -fx-background-color: #4a4a4a;
+    -fx-spacing: 20;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+/* Buttons */
+.button-container .modern-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.button-container .modern-button:hover {
+    -fx-background-color: #66BB6A;
+}
+
+.button-container .modern-button:pressed {
+    -fx-background-color: #388E3C;
+}
+
+/* Content Area */
+.content-area {
+    -fx-border-color: #cccccc;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-padding: 10;
+}
+
+/* Notes List */
+.notes-list-container {
+    -fx-border-color: #cccccc;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-padding: 10;
+    -fx-background-color: #ffffff;
+}
+
+.notes-list {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+}
+
+/* Note Content */
+.note-content-container {
+    -fx-border-color: #cccccc;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+    -fx-padding: 10;
+    -fx-background-color: #ffffff;
+}
+
+.note-content-area {
+    -fx-font-size: 14px;
+    -fx-padding: 10;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5;
+}
+
+
 
 
 

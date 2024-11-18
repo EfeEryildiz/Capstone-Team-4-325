@@ -1,41 +1,33 @@
 package org.example.studystack;
 
 import javafx.fxml.FXML;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 public class HomeController {
-
-    @FXML
-    private ImageView homeImage;
-
-    @FXML
-    private Button logInButton;
-
-    @FXML
-    private Button createAccountButton;
-
     @FXML
     private Label descriptionLabel;
 
     @FXML
+    private Button viewProgressButton;
+
+    public HomeController() {
+        // Default constructor
+    }
+
+    @FXML
     public void initialize() {
-
-
-        // Optionally, set up actions for the buttons
-        logInButton.setOnAction(event -> handleLogIn());
-        createAccountButton.setOnAction(event -> handleCreateAccount());
+        // Set up the button action for viewing progress
+        viewProgressButton.setOnAction(event -> handleViewProgress());
     }
 
-    private void handleLogIn() {
-        // Logic for Log In button
-    }
-
-    private void handleCreateAccount() {
-        // Logic for Create Account button
+    private void handleViewProgress() {
+        // Logic to handle the "View Notes Progress" button click
+        System.out.println("View Notes Progress button clicked!");
+        // Replace the above with your actual functionality, e.g., navigating to a new screen
+        // or showing a progress dialog.
     }
 }
+
 
 

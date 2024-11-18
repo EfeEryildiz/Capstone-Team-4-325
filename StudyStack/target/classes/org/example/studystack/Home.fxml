@@ -2,23 +2,24 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
 
 <VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.HomeController">
 
     <!-- Description Text -->
-    <Label text="Welcome to StudySync! This app helps you create flashcards, take quizzes, and organize notes for efficient studying." wrapText="true" styleClass="home-description"/>
+    <Label text="Welcome to StudySync! Your ultimate app for efficient studying and note management."
+           wrapText="true"
+           styleClass="home-description" />
 
-
-
-    <!-- Button Container -->
-    <HBox alignment="CENTER" spacing="20">
-        <Button text="Log In" fx:id="logInButton" styleClass="login-button"/>
-        <Button text="Create Account" fx:id="createAccountButton" styleClass="create-account-button"/>
-    </HBox>
+    <!-- Progress Feature Section -->
+    <VBox alignment="CENTER" spacing="10">
+        <Label text="Track Your Progress" styleClass="section-header"/>
+        <Button text="View Notes Progress"
+                fx:id="viewProgressButton"
+                styleClass="modern-button" />
+    </VBox>
 
 </VBox>
+
 
 

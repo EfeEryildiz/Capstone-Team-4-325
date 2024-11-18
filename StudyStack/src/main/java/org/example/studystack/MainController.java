@@ -2,8 +2,8 @@ package org.example.studystack;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 
@@ -12,34 +12,42 @@ public class MainController {
     @FXML
     private BorderPane contentPane;
 
-    // Load the Home page
     @FXML
-    private void loadHomePage() throws IOException {
-        VBox homePane = FXMLLoader.load(getClass().getResource("Home.fxml"));
-        contentPane.setCenter(homePane);
+    public void initialize() {
+        // Load the home page as the default view
+        loadHomePage();
     }
 
-    // Load the Flashcards page
     @FXML
-    private void loadFlashcardsPage() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Flashcards.fxml"));
-        VBox pane = (VBox) loader.load();
-        contentPane.setCenter(pane);
+    private void loadHomePage() {
+        loadView("Home.fxml");
     }
 
-    // Load the Quiz Mode page
     @FXML
-    private void loadQuizModePage() throws IOException {
-        VBox quizModePane = FXMLLoader.load(getClass().getResource("QuizMode.fxml"));
-        contentPane.setCenter(quizModePane);  // This works because contentPane is a BorderPane
+    private void loadFlashcardsPage() {
+        loadView("Flashcards.fxml");
     }
 
-    // Load the Notebook page
     @FXML
-    private void loadNotebookPage() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("Notebook.fxml"));
-        VBox pane = (VBox) loader.load();
-        contentPane.setCenter(pane);
+    private void loadQuizModePage() {
+        loadView("QuizMode.fxml");
+    }
+
+    @FXML
+    private void loadNotebookPage() {
+        loadView("Notebook.fxml");
+    }
+
+    // Utility method to load views dynamically into the contentPane
+    private void loadView(String fxmlFileName) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFileName));
+            Node view = loader.load();
+            contentPane.setCenter(view); // Set the new view in the center of the BorderPane
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
+
 
