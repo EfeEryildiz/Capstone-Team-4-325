@@ -10,6 +10,7 @@ module org.example.studystack {
     requires com.google.api.client.auth;
     requires java.net.http;
     requires org.json;
+    requires java.logging;
 
 
     opens org.example.studystack to javafx.fxml;

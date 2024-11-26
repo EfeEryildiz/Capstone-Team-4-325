@@ -24,7 +24,11 @@
                         <Font name="System Bold" size="28.0" />
                     </font>
                 </Text>
-                <Button layoutX="97.0" layoutY="355.0" mnemonicParsing="false" style="-fx-background-color: #a2d5c6;" text="Create Account" textFill="black" />
+                <Button layoutX="97.0" layoutY="355.0" mnemonicParsing="false"
+                        onAction="#handleCreateAccount"
+                        style="-fx-background-color: #a2d5c6;"
+                        text="Create Account" textFill="black" />
+
             </children>
         </AnchorPane>
     </right>
