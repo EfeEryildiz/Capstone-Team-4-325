@@ -7,16 +7,24 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.FlashcardsController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.FlashcardsController" spacing="20" alignment="CENTER" style="-fx-padding: 20;">
     <children>
-        <HBox spacing="10" alignment="CENTER">
-            <Button text="New Deck" onAction="#handleNewDeck" />
-            <Button text="New Flashcard" onAction="#handleNewFlashcard" />
+        <HBox spacing="15" alignment="CENTER">
+            <Button text="New Deck" onAction="#handleNewDeck" fx:id="newDeckButton" styleClass="modern-button" />
+            <Button text="New Flashcard" onAction="#handleNewFlashcard" fx:id="newFlashcardButton" styleClass="modern-button" />
         </HBox>
-        <HBox spacing="10" alignment="CENTER">
-            <ListView fx:id="decksListView" prefWidth="200" prefHeight="300" />
-            <ListView fx:id="flashcardsListView" prefWidth="300" prefHeight="300" />
+
+        <HBox spacing="20" alignment="TOP_CENTER">
+            <!-- Decks List -->
+            <VBox spacing="10">
+                <ListView fx:id="decksListView" prefWidth="200" prefHeight="400" />
+            </VBox>
+
+            <VBox spacing="10">
+                <ListView fx:id="flashcardsListView" prefWidth="400" prefHeight="400" />
+            </VBox>
         </HBox>
+
         <VBox fx:id="flashcardEditorVBox" spacing="10" alignment="CENTER" style="-fx-border-color: black; -fx-padding: 10;">
             <children>
                 <TextField fx:id="questionField" promptText="Enter question here..." prefWidth="400" />

@@ -4,22 +4,16 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.HomeController">
+<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.studystack.HomeController">
 
     <!-- Description Text -->
-    <Label text="Welcome to StudySync! Your ultimate app for efficient studying and note management."
-           wrapText="true"
-           styleClass="home-description" />
+    <Label styleClass="home-description" text="Welcome to StudySync! The ultimate application to create and store course notes through Firebase integration, create flashcards and quizzes, and get accurate quiz results!" wrapText="true" />
 
     <!-- Progress Feature Section -->
     <VBox alignment="CENTER" spacing="10">
-        <Label text="Track Your Progress" styleClass="section-header"/>
-        <Button text="View Notes Progress"
-                fx:id="viewProgressButton"
-                styleClass="modern-button" />
+        <Button fx:id="viewProgressButton" styleClass="modern-button" text="View Notes Progress" />
     </VBox>
+    <Button fx:id="logoutButton" mnemonicParsing="false" onAction="#handleLogout" prefHeight="31.0" prefWidth="82.0" text="Logout" />
+
 
 </VBox>
-
-
-

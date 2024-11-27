@@ -12,30 +12,27 @@
     <right>
         <AnchorPane prefHeight="400.0" prefWidth="300.0" BorderPane.alignment="CENTER">
             <children>
-                <TextField fx:id="usernameField" layoutX="60.0" layoutY="148.0" prefHeight="28.0" prefWidth="180.0" promptText="Username" style="-fx-background-color: transparent; -fx-border-color: #a2d5c6; -fx-border-width: 0px 0px 2px;" />
-                <PasswordField fx:id="passwordField" layoutX="60.0" layoutY="194.0" prefHeight="28.0" prefWidth="181.0" promptText="Password" style="-fx-background-color: transparent; -fx-border-color: #a2d5c6; -fx-border-width: 0px 0px 2px;" />
-                <Button layoutX="60.0" layoutY="250.0" mnemonicParsing="false" onAction="#handleLogin" prefHeight="32.0" prefWidth="180.0" style="-fx-background-color: #a2d5c6;" text="Login" textFill="WHITE">
+                <TextField fx:id="usernameField" layoutX="60.0" layoutY="148.0" prefHeight="28.0" prefWidth="180.0" promptText="Username" style="-fx-background-color: transparent; -fx-border-color: #0078D7;; -fx-border-width: 0px 0px 2px;" />
+                <PasswordField fx:id="passwordField" layoutX="60.0" layoutY="194.0" prefHeight="28.0" prefWidth="181.0" promptText="Password" style="-fx-background-color: transparent; -fx-border-color: #0078D7;; -fx-border-width: 0px 0px 2px;" />
+                <Button layoutX="60.0" layoutY="250.0" mnemonicParsing="false" onAction="#handleLogin" prefHeight="32.0" prefWidth="180.0" style="-fx-background-color: #0078D7;;" text="Login" textFill="WHITE">
                     <font>
                         <Font size="14.0" />
                     </font>
                 </Button>
-                <Text fill="#a2d5c6" layoutX="60.0" layoutY="103.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Login" textAlignment="CENTER" wrappingWidth="179.57421875">
+                <Text fill="#0078d7" layoutX="60.0" layoutY="103.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Login" textAlignment="CENTER" wrappingWidth="179.57421875">
                     <font>
                         <Font name="System Bold" size="28.0" />
                     </font>
                 </Text>
-                <Button layoutX="97.0" layoutY="355.0" mnemonicParsing="false"
-                        onAction="#handleCreateAccount"
-                        style="-fx-background-color: #a2d5c6;"
-                        text="Create Account" textFill="black" />
+                <Button layoutX="97.0" layoutY="355.0" mnemonicParsing="false" onAction="#handleCreateAccount" style="-fx-background-color: #0078D7;;" text="Create Account" textFill="WHITE" />
 
             </children>
         </AnchorPane>
     </right>
     <center>
-        <AnchorPane prefHeight="441.0" prefWidth="361.0" style="-fx-background-color: #a2d5c6;" BorderPane.alignment="CENTER">
+        <AnchorPane prefHeight="441.0" prefWidth="361.0" style="-fx-background-color: #0078D7;;" BorderPane.alignment="CENTER">
             <children>
-                <Text fill="black" layoutX="23.0" layoutY="188.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0" text=" Welcome to StudySync" textAlignment="CENTER" wrappingWidth="253.255859375">
+                <Text fill="WHITE" layoutX="23.0" layoutY="188.0" stroke="BLACK" strokeType="OUTSIDE" strokeWidth="0.0" text=" Welcome to StudySync" textAlignment="CENTER" wrappingWidth="253.255859375">
                     <font>
                         <Font name="AppleMyungjo Regular" size="36.0" />
                     </font>

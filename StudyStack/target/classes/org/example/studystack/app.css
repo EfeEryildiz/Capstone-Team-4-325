@@ -85,7 +85,7 @@
 }
 
 .login-button, .create-account-button {
-    -fx-background-color: #4CAF50;
+    -fx-background-color: #0078D7;
     -fx-text-fill: #fff;
     -fx-font-size: 14px;
     -fx-padding: 10px 20px;
@@ -93,7 +93,7 @@
 }
 
 .login-button:hover, .create-account-button:hover {
-    -fx-background-color: #45A049;
+    -fx-background-color: #0078D7;
 }
 
 /*Quiz question label*/
@@ -201,7 +201,7 @@
 
 /* Buttons */
 .button-container .modern-button {
-    -fx-background-color: #4CAF50;
+    -fx-background-color: #0078D7;
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
@@ -212,11 +212,11 @@
 }
 
 .button-container .modern-button:hover {
-    -fx-background-color: #66BB6A;
+    -fx-background-color: #0078D7;
 }
 
 .button-container .modern-button:pressed {
-    -fx-background-color: #388E3C;
+    -fx-background-color: #0078D7;
 }
 
 /* Content Area */
@@ -225,6 +225,25 @@
     -fx-border-width: 2;
     -fx-border-radius: 5;
     -fx-padding: 10;
+}
+
+/* Flashcards */
+.modern-button {
+    -fx-background-color: #0078D7;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.3), 4, 0, 0, 2);
+}
+.modern-button:hover {
+    -fx-background-color: #005FAE;
+}
+.modern-button:pressed {
+    -fx-background-color: #004C89;
 }
 
 /* Notes List */
@@ -261,7 +280,7 @@
 .title-text {
     -fx-font-size: 28px;
     -fx-font-weight: bold;
-    -fx-fill: #a2d5c6; /* Match the theme color */
+    -fx-fill: #0078D7; /* Match the theme color */
     -fx-text-alignment: center;
 }
 
@@ -285,7 +304,7 @@
 
 /* Buttons for Sign Up and Back Navigation */
 .primary-button {
-    -fx-background-color: #4CAF50; /* Green theme for primary action */
+    -fx-background-color: #0078D7; /* Green theme for primary action */
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-padding: 10px 20px;
