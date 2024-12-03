@@ -108,6 +108,11 @@ public class FirebaseAuthService {
             return false;
         }
     }
+
+    /* Logs user out */
+    public static void logout() {
+        System.out.println("User logged out.");
+    }
 }
 
 
