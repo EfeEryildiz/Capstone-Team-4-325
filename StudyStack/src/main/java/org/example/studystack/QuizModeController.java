@@ -162,14 +162,19 @@ public class QuizModeController {
         //Get selected option
         RadioButton selectedOption = (RadioButton) optionsGroup.getSelectedToggle();
         if (selectedOption != null) {
-            String userAnswer = selectedOption.getText();
-            String correctAnswer = currentFlashcard.getAnswer();
+            //Trim and normalize
+            String userAnswer = selectedOption.getText().trim().toLowerCase();
+            String correctAnswer = currentFlashcard.getAnswer().trim().toLowerCase();
 
-            if (userAnswer.equalsIgnoreCase(correctAnswer.trim())) {
+            //Remove punctuation from both answers
+            //userAnswer = userAnswer.replaceAll("\\p{Punct}", "");
+            //correctAnswer = correctAnswer.replaceAll("\\p{Punct}", "");
+
+            if (userAnswer.equals(correctAnswer)) {
                 feedbackLabel.setText("Correct!");
                 score++;
             } else {
-                feedbackLabel.setText("Incorrect. The correct answer is: " + correctAnswer);
+                feedbackLabel.setText("Incorrect. The correct answer is: " + currentFlashcard.getAnswer());
             }
 
             currentIndex++;

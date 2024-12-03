@@ -9,7 +9,6 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.io.FileInputStream;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,7 +34,7 @@ public class OpenAIAPIController {
     //Method to generate flashcards from notes
     public static List<Flashcard> generateFlashcards(String noteContent) throws IOException, InterruptedException {
         //Prepare the prompt with this formatting
-        String prompt = "Convert the following notes into flashcards. Each flashcard should have a question and an answer.  Match the following format exactly, including the brackets, \n\n" +
+        String prompt = "Convert the following notes into flashcards. Each flashcard should have a question and an answer. Match the following format exactly, including the brackets, and do not include any additional text or explanations.\n\n" +
                 "Format each flashcard as follows:\n" +
                 "Q: [Your question here]\n" +
                 "A: [Your answer here]\n\n" +
@@ -48,8 +47,16 @@ public class OpenAIAPIController {
         requestBody.put("temperature", 0.7); //This is the creativity of the model
 
         JSONArray messages = new JSONArray();
+
+        //System message to guide the assistant
+        JSONObject systemMessage = new JSONObject();
+        systemMessage.put("role", "system");
+        systemMessage.put("content", "You are an assistant that converts notes into flashcards. Follow the format strictly.");
+        messages.put(systemMessage);
+
         JSONObject message = new JSONObject();
         message.put("role", "user");
+        //message.put("role": "system", "content": "Your goal is to generate flashcards...");
         message.put("content", prompt);
         messages.put(message);
 
@@ -99,10 +106,11 @@ public class OpenAIAPIController {
 
     //Method to generate multiple choice options
     public static List<String> generateMultipleChoiceOptions(String question, String correctAnswer) throws IOException, InterruptedException {
-        String prompt = "This is a multiple choice question, so create three incorrect but plausible answers for the following question, and include the correct answer as one of the options.  Make sure there are FOUR options/choices in total no matter what.  Thanks\n\n" +
+        String prompt = "Create three incorrect but plausible answers for the following question and include the correct answer as one of the options. Make sure there are exactly four options in total. Please output only the options as a JSON array of strings.\n\n" +
                 "Question: " + question + "\n" +
                 "Correct Answer: " + correctAnswer + "\n\n" +
                 "Options (in JSON array format):";
+
 
         //Prepare the request body using json
         JSONObject requestBody = new JSONObject();
