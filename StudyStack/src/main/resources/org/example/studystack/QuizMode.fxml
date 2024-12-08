@@ -7,27 +7,48 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.QuizModeController" spacing="20" alignment="CENTER" styleClass="quiz-mode-container" stylesheets="@app.css">
+<VBox xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="org.example.studystack.QuizModeController" 
+      spacing="10" 
+      styleClass="quiz-mode-container" 
+      stylesheets="@app.css"
+      prefHeight="500">
+    
+    <!-- Header Section -->
+    <HBox spacing="10" alignment="CENTER">
+        <Label fx:id="SelectText" text="Select Deck:" styleClass="select-deck-label" />
+        <ComboBox fx:id="deckComboBox" prefWidth="200" />
+        <Button fx:id="startQuizButton" 
+                text="Start Quiz" 
+                onAction="#handleStartQuiz" 
+                styleClass="flashcards-button" />
+    </HBox>
 
-    <children>
-        <!-- Header Section -->
-        <HBox spacing="10" alignment="CENTER">
-            <Label fx:id="SelectText" text="Select Deck:" styleClass="select-deck-label" />
-            <ComboBox fx:id="deckComboBox" prefWidth="200" styleClass="combo-box" />
-            <Button fx:id="startQuizButton" text="Start Quiz" onAction="#handleStartQuiz" styleClass="modern-button" />
-        </HBox>
-
-        <!-- Quiz Content Section -->
-        <VBox fx:id="quizVBox" spacing="20" alignment="CENTER">
-            <Label fx:id="questionLabel" text="Question will appear here" wrapText="true" styleClass="question-label" />
-            <ScrollPane fitToWidth="true" prefHeight="200.0" styleClass="modern-scroll-pane">
-                <content>
-                    <VBox fx:id="optionsVBox" spacing="10" styleClass="options-container" />
-                </content>
-            </ScrollPane>
-            <Button fx:id="submitButton" text="Submit Answer" onAction="#handleSubmitAnswer" styleClass="modern-button" />
-            <Label fx:id="feedbackLabel" text="" wrapText="true" styleClass="feedback-label" />
+    <!-- Quiz Content Section -->
+    <VBox fx:id="quizVBox" spacing="10" VBox.vgrow="ALWAYS">
+        <Label fx:id="questionLabel" 
+               text="Question will appear here" 
+               wrapText="true" 
+               styleClass="question-label" />
+        
+        <ScrollPane fitToWidth="true" 
+                   VBox.vgrow="ALWAYS" 
+                   prefHeight="400" 
+                   styleClass="modern-scroll-pane">
+            <VBox fx:id="optionsVBox" spacing="2"/>
+        </ScrollPane>
+        
+        <VBox alignment="BOTTOM_CENTER" spacing="10">
+            <Button fx:id="submitButton" 
+                    text="Submit Answer" 
+                    onAction="#handleSubmitAnswer" 
+                    styleClass="flashcards-button" />
+            
+            <Label fx:id="feedbackLabel" 
+                   text="" 
+                   wrapText="true" 
+                   styleClass="feedback-label" />
         </VBox>
-    </children>
+    </VBox>
 </VBox>
 
