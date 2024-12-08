@@ -12,6 +12,7 @@
         <HBox spacing="10" alignment="CENTER">
             <Button text="New Deck" onAction="#handleNewDeck" />
             <Button text="New Flashcard" onAction="#handleNewFlashcard" />
+            <Button fx:id="deleteButton" text="Delete" onAction="#handleDelete" />
         </HBox>
         <HBox spacing="10" alignment="CENTER">
             <ListView fx:id="decksListView" prefWidth="200" prefHeight="300" />

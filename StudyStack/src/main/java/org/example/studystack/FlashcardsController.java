@@ -28,6 +28,9 @@ public class FlashcardsController {
     @FXML
     private Button saveFlashcardButton;
 
+    @FXML
+    private Button deleteButton;
+
     private Deck selectedDeck;
 
     @FXML
@@ -43,10 +46,11 @@ public class FlashcardsController {
             selectedDeck = newValue;
             if (newValue != null) {
                 flashcardsListView.setItems(newValue.getFlashcards());
-                flashcardEditorVBox.setDisable(false); //Enable editor
+                flashcardEditorVBox.setDisable(false);
+                deleteButton.setText("Delete Deck");
             } else {
                 flashcardsListView.setItems(null);
-                flashcardEditorVBox.setDisable(true); //Disable editor
+                flashcardEditorVBox.setDisable(true);
             }
         });
 
@@ -55,13 +59,16 @@ public class FlashcardsController {
 
         //Handle flashcard selection
         flashcardsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            //Incomplete/Optional, we need to implement if we want to display flashcard details or allow editing
+            if (newValue != null) {
+                deleteButton.setText("Delete Flashcard");
+            } else if (selectedDeck != null) {
+                deleteButton.setText("Delete Deck");
+            }
         });
     }
 
     @FXML
     private void handleNewDeck() {
-        //Create a window to enter the name of the new deck
         TextInputDialog deckDialog = new TextInputDialog();
         deckDialog.setTitle("New Deck");
         deckDialog.setHeaderText("Create a New Deck");
@@ -71,7 +78,6 @@ public class FlashcardsController {
         if (deckResult.isPresent()) {
             String deckName = deckResult.get().trim();
             if (!deckName.isEmpty()) {
-                //Check for duplicate deck names
                 boolean duplicate = DataStore.getInstance().getDecksList().stream()
                         .anyMatch(deck -> deck.getName().equalsIgnoreCase(deckName));
                 if (duplicate) {
@@ -83,9 +89,9 @@ public class FlashcardsController {
                 } else {
                     Deck newDeck = new Deck(deckName);
                     DataStore.getInstance().getDecksList().add(newDeck);
+                    FirebaseRealtimeDB.saveDeck(newDeck);
                 }
             } else {
-                //Show an error if the deck name is empty
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Invalid Deck Name");
                 alert.setHeaderText(null);
@@ -144,7 +150,6 @@ public class FlashcardsController {
 
             Platform.runLater(() -> {
                 selectedDeck.getFlashcards().add(newFlashcard);
-                // Save to Firebase after adding the flashcard
                 FirebaseRealtimeDB.saveDeck(selectedDeck);
                 
                 flashcardEditorVBox.setVisible(false);
@@ -152,5 +157,52 @@ public class FlashcardsController {
                 answerArea.clear();
             });
         }).start();
+    }
+
+    @FXML
+    private void handleDelete() {
+        Deck selectedDeck = decksListView.getSelectionModel().getSelectedItem();
+        Flashcard selectedFlashcard = flashcardsListView.getSelectionModel().getSelectedItem();
+        
+        if (selectedFlashcard != null) {
+            // Delete Flashcard
+            Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmDialog.setTitle("Delete Flashcard");
+            confirmDialog.setHeaderText("Delete this flashcard?");
+            confirmDialog.setContentText("Question: " + selectedFlashcard.getQuestion());
+
+            Optional<ButtonType> result = confirmDialog.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                selectedDeck.getFlashcards().remove(selectedFlashcard);
+                flashcardsListView.getSelectionModel().clearSelection();
+                flashcardEditorVBox.setVisible(false);
+                questionField.clear();
+                answerArea.clear();
+                FirebaseRealtimeDB.saveDeck(selectedDeck);
+            }
+        } else if (selectedDeck != null) {
+            // Delete Deck
+            Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmDialog.setTitle("Delete Deck");
+            confirmDialog.setHeaderText("Delete this deck?");
+            confirmDialog.setContentText("Deck: " + selectedDeck.getName());
+
+            Optional<ButtonType> result = confirmDialog.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                DataStore.getInstance().getDecksList().remove(selectedDeck);
+                FirebaseRealtimeDB.deleteDeck(selectedDeck);
+                decksListView.getSelectionModel().clearSelection();
+                flashcardsListView.setItems(null);
+                flashcardEditorVBox.setVisible(false);
+                questionField.clear();
+                answerArea.clear();
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("No Selection");
+            alert.setHeaderText(null);
+            alert.setContentText("Please select a deck or flashcard to delete.");
+            alert.showAndWait();
+        }
     }
 }
