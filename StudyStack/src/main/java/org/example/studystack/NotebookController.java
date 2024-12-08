@@ -231,119 +231,52 @@ public class NotebookController {
             return;
         }
 
-        //Loading indicator
-        ProgressIndicator progressIndicator = new ProgressIndicator();
-        Dialog<Void> dialog = new Dialog<>();
-        dialog.setGraphic(progressIndicator);
-        dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-        dialog.setTitle("Converting Notes to Flashcards...");
-        dialog.setHeaderText(null);
-
-        //Handle cancel button
-        Button cancelButton = (Button) dialog.getDialogPane().lookupButton(ButtonType.CANCEL);
-        cancelButton.setOnAction(event -> {
-            dialog.close();
-        });
-
-        //Using AtomicInteger for thread safe counters
-
-        //This system keeps track of how many conversions failed and how many worked, this is to provide useful data to
-        //the user
+        // Using AtomicInteger for thread safe counters
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger failureCount = new AtomicInteger(0);
-        List<String> failedNotes = Collections.synchronizedList(new ArrayList<>());
 
-        //Start the conversion in a separate thread
-        new Thread(() -> {
+        // Start the conversion in a separate thread
+        Thread conversionThread = new Thread(() -> {
             for (Note note : selectedNotes) {
                 try {
-                    //Add AI to title of AI generated notes
                     String deckName = note.getTitle() + " (AI)";
 
-                    //Check for duplicate deck names
                     boolean duplicateDeck = DataStore.getInstance().getDecksList().stream()
                             .anyMatch(deck -> deck.getName().equalsIgnoreCase(deckName));
                     if (duplicateDeck) {
-                        System.err.println("Deck '" + deckName + "' already exists. Skipping creation for this note.");
-                        failedNotes.add(note.getTitle() + " (Duplicate Deck)");
                         failureCount.incrementAndGet();
-                        continue; //Skip creating this deck
+                        continue;
                     }
 
                     Deck newDeck = new Deck(deckName);
-                    Platform.runLater(() -> {
-                        DataStore.getInstance().getDecksList().add(newDeck);
-                        System.out.println("Created deck: " + deckName);
-                    });
+                    List<Flashcard> generatedFlashcards = OpenAIAPIController.generateFlashcards(note.getContent());
 
-                    String noteContent = note.getContent();
-
-                    //Generate flashcards from the note's content
-                    List<Flashcard> generatedFlashcards = OpenAIAPIController.generateFlashcards(noteContent);
-
-                    if (generatedFlashcards != null && !generatedFlashcards.isEmpty()){
-                        //Add flashcards to the newly created deck
+                    if (generatedFlashcards != null && !generatedFlashcards.isEmpty()) {
                         Platform.runLater(() -> {
+                            DataStore.getInstance().getDecksList().add(newDeck);
                             newDeck.getFlashcards().addAll(generatedFlashcards);
                             FirebaseRealtimeDB.saveDeck(newDeck);
-                            System.out.println("Added " + generatedFlashcards.size() + " flashcards to deck '" + deckName + "'.");
                         });
                         successCount.incrementAndGet();
                     } else {
-                        System.err.println("Failed to generate flashcards for note: " + note.getTitle());
-                        failedNotes.add(note.getTitle() + " (No Flashcards Generated)");
                         failureCount.incrementAndGet();
-                        Platform.runLater(() -> {
-                            DataStore.getInstance().getDecksList().remove(newDeck);
-                            System.out.println("Removed empty deck '" + deckName + "'.");
-                        });
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    failedNotes.add(note.getTitle() + " (" + e.getMessage() + ")");
                     failureCount.incrementAndGet();
                 }
             }
 
             Platform.runLater(() -> {
-                dialog.close(); // Ensure the loading dialog is closed
-
-                // Build the conversion results message
-                StringBuilder message = new StringBuilder();
-                message.append("Conversion Completed!\n");
-                message.append("Successful: ").append(successCount.get()).append("\n");
-                message.append("Failed: ").append(failureCount.get()).append("\n");
-
-                if (!failedNotes.isEmpty()) {
-                    message.append("\nFailed Notes:\n");
-                    for (String failedNote : failedNotes) {
-                        message.append("- ").append(failedNote).append("\n");
-                    }
-                }
-
-                // Debugging: Print message to console
-                System.out.println("Conversion Results: \n" + message);
-
-                // Show results in an alert dialog
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Conversion Results");
-                alert.setHeaderText("Notes to Flashcards Conversion Summary");
-                alert.setContentText(message.toString());
-
-                // Make the dialog expandable for long content
-                TextArea expandableContent = new TextArea(message.toString());
-                expandableContent.setEditable(false);
-                expandableContent.setWrapText(true);
-                alert.getDialogPane().setExpandableContent(new VBox(expandableContent));
-
-                // Show the alert
+                alert.setTitle("Conversion Complete");
+                alert.setHeaderText(null);
+                alert.setContentText("Successfully converted " + successCount.get() + " notes to flashcards.");
                 alert.showAndWait();
             });
+        });
 
-
-        }).start(); //Start the background thread
-
-        dialog.showAndWait();
+        conversionThread.start();
     }
 
     // Add this to ensure we save when closing/switching views

@@ -13,9 +13,9 @@
 
     <!-- Progress Feature Section -->
     <VBox alignment="CENTER" spacing="10">
-        <Label text="Track Your Progress" styleClass="section-header"/>
-        <Button text="View Notes Progress"
-                fx:id="viewProgressButton"
+        <Button text="Logout"
+                fx:id="logoutButton"
+                onAction="#handleLogout"
                 styleClass="modern-button" />
     </VBox>
 

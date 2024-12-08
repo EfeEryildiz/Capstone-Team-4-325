@@ -129,35 +129,33 @@
 /* Quiz Mode Container Background */
 .quiz-mode-container {
     -fx-background-color: #4a4a4a; /* Solid dark gray */
-    -fx-padding: 20;
-    -fx-border-radius: 10; /* Optional rounded corners */
-    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-spacing: 10;
 }
 
 /* General Label Styling */
 .select-deck-label {
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #ffffff; /* White text for contrast */
+    -fx-font-size: 14px;
+    -fx-text-fill: white; /* White text for contrast */
 }
 
 .question-label {
     -fx-font-size: 18px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #ffffff; /* White text for visibility */
+    -fx-text-fill: white;
+    -fx-padding: 10 0 10 0;
 }
 
 .feedback-label {
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
     -fx-text-fill: #66bb6a; /* Light green for feedback */
+    -fx-padding: 10 0 0 0;
 }
 
 /* ComboBox Styling */
 .combo-box {
-    -fx-background-color: #ffffff; /* White background */
-    -fx-border-color: #cccccc; /* Light gray border */
-    -fx-border-radius: 5;
-    -fx-padding: 5;
+    -fx-background-color: white; /* White background */
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
 }
 
 /* Buttons */
@@ -184,19 +182,22 @@
 
 /* ScrollPane */
 .modern-scroll-pane {
-    -fx-background-color: #ffffff; /* Clean white background */
-    -fx-border-color: #dddddd; /* Light border */
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
+    -fx-background-color: transparent;
+    -fx-border-color: white;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-padding: 10;
+}
+
+.modern-scroll-pane > .viewport {
+    -fx-background-color: #4a4a4a;
 }
 
 /* Notebook Container */
 .notebook-container {
-    -fx-padding: 20;
     -fx-background-color: #4a4a4a;
-    -fx-spacing: 20;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-spacing: 5;
 }
 
 /* Buttons */
@@ -204,11 +205,11 @@
     -fx-background-color: #4CAF50;
     -fx-text-fill: white;
     -fx-font-size: 14px;
+    -fx-padding: 8px 15px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
     -fx-font-weight: bold;
-    -fx-padding: 10 20;
-    -fx-border-radius: 5;
-    -fx-background-radius: 5;
-    -fx-cursor: hand;
+    -fx-min-width: 150px;
 }
 
 .button-container .modern-button:hover {
@@ -221,10 +222,13 @@
 
 /* Content Area */
 .content-area {
-    -fx-border-color: #cccccc;
-    -fx-border-width: 2;
-    -fx-border-radius: 5;
-    -fx-padding: 10;
+    -fx-background-color: #4a4a4a;
+    -fx-padding: 15;
+    -fx-border-color: white;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-spacing: 5;
 }
 
 /* Notes List */
@@ -325,6 +329,77 @@
     -fx-border-radius: 10px;
 }
 
+/* Flashcards Screen Buttons */
+.flashcards-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 15px;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-font-weight: bold;
+    -fx-min-width: 150px;
+}
+
+.flashcards-button:hover {
+    -fx-background-color: #45A049;
+}
+
+.flashcards-button:pressed {
+    -fx-background-color: #388E3C;
+}
+
+/* Adjust the main container sizing */
+.flashcards-container {
+    -fx-background-color: #4a4a4a;
+    -fx-padding: 15;
+    -fx-spacing: 5;
+}
+
+/* Content area with lists */
+.flashcards-content {
+    -fx-background-color: #4a4a4a;
+    -fx-padding: 15;
+    -fx-border-color: white;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-spacing: 5;
+    -fx-alignment: center;
+}
+
+/* List view styling */
+.list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+}
+
+/* Options VBox */
+.options-container {
+    -fx-padding: 10;
+    -fx-spacing: 10;
+}
+
+/* Question Label */
+.question-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: white; 
+    -fx-padding: 10 0 10 0;
+}
+
+/* Radio Button Text */
+.radio-button {
+    -fx-text-fill: white; 
+}
+
+.radio-button .radio {
+    -fx-background-color: white;
+}
+
+.radio-button:selected .radio .dot {
+    -fx-background-color: #4CAF50; 
+}
 
 
 

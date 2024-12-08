@@ -9,6 +9,7 @@ public class DataStore {
 
     private ObservableList<Note> notesList;
     private ObservableList<Deck> decksList;
+    private String currentUserEmail;
 
     private DataStore() {
         notesList = FXCollections.observableArrayList();
@@ -28,5 +29,15 @@ public class DataStore {
 
     public ObservableList<Deck> getDecksList() {
         return decksList;
+    }
+
+    public void signOut() {
+        // Clear any user data
+        currentUserEmail = null;
+        // Clear other data as needed
+    }
+
+    public String getCurrentUserEmail() {
+        return currentUserEmail;
     }
 }

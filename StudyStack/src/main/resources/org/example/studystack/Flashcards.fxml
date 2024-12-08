@@ -7,23 +7,23 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.FlashcardsController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
-    <children>
-        <HBox spacing="10" alignment="CENTER">
-            <Button text="New Deck" onAction="#handleNewDeck" />
-            <Button text="New Flashcard" onAction="#handleNewFlashcard" />
-            <Button fx:id="deleteButton" text="Delete" onAction="#handleDelete" />
-        </HBox>
-        <HBox spacing="10" alignment="CENTER">
-            <ListView fx:id="decksListView" prefWidth="200" prefHeight="300" />
-            <ListView fx:id="flashcardsListView" prefWidth="300" prefHeight="300" />
-        </HBox>
-        <VBox fx:id="flashcardEditorVBox" spacing="10" alignment="CENTER" style="-fx-border-color: black; -fx-padding: 10;">
-            <children>
-                <TextField fx:id="questionField" promptText="Enter question here..." prefWidth="400" />
-                <TextArea fx:id="answerArea" promptText="Enter answer here..." prefWidth="400" prefHeight="100" wrapText="true" />
-                <Button text="Save Flashcard" onAction="#handleSaveFlashcard" />
-            </children>
-        </VBox>
-    </children>
+<VBox xmlns:fx="http://javafx.com/fxml" 
+      fx:controller="org.example.studystack.FlashcardsController" 
+      styleClass="flashcards-container">
+    <HBox spacing="5" alignment="CENTER">
+        <Button text="New Deck" 
+                onAction="#handleNewDeck" 
+                styleClass="flashcards-button" />
+        <Button text="New Flashcard" 
+                onAction="#handleNewFlashcard" 
+                styleClass="flashcards-button" />
+        <Button fx:id="deleteButton" 
+                text="Delete" 
+                onAction="#handleDelete" 
+                styleClass="flashcards-button" />
+    </HBox>
+    <HBox spacing="5" alignment="CENTER" styleClass="flashcards-content">
+        <ListView fx:id="decksListView" prefWidth="200" prefHeight="400" />
+        <ListView fx:id="flashcardsListView" prefWidth="300" prefHeight="400" />
+    </HBox>
 </VBox>

@@ -39,28 +39,32 @@ public class FlashcardsController {
         decksListView.setItems(DataStore.getInstance().getDecksList());
 
         //Initially disable the flashcard editor
-        flashcardEditorVBox.setDisable(true);
+        if (flashcardEditorVBox != null) {
+            flashcardEditorVBox.setDisable(true);
+            flashcardEditorVBox.setVisible(false);
+        }
 
         //Handle deck selection changes
         decksListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             selectedDeck = newValue;
             if (newValue != null) {
                 flashcardsListView.setItems(newValue.getFlashcards());
-                flashcardEditorVBox.setDisable(false);
+                if (flashcardEditorVBox != null) {
+                    flashcardEditorVBox.setDisable(false);
+                }
                 deleteButton.setText("Delete Deck");
             } else {
                 flashcardsListView.setItems(null);
-                flashcardEditorVBox.setDisable(true);
+                if (flashcardEditorVBox != null) {
+                    flashcardEditorVBox.setDisable(true);
+                }
             }
         });
-
-        //Hide the flashcard editor initially
-        flashcardEditorVBox.setVisible(false);
 
         //Handle flashcard selection
         flashcardsListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                deleteButton.setText("Delete Flashcard");
+                deleteButton.setText("Delete Card");
             } else if (selectedDeck != null) {
                 deleteButton.setText("Delete Deck");
             }

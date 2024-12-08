@@ -2,30 +2,34 @@ package org.example.studystack;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import java.io.IOException;
 
 public class HomeController {
     @FXML
-    private Label descriptionLabel;
-
-    @FXML
-    private Button viewProgressButton;
-
-    public HomeController() {
-        // Default constructor
-    }
+    private Button logoutButton;
 
     @FXML
     public void initialize() {
-        // Set up the button action for viewing progress
-        viewProgressButton.setOnAction(event -> handleViewProgress());
+        // No initialization needed now
     }
 
-    private void handleViewProgress() {
-        // Logic to handle the "View Notes Progress" button click
-        System.out.println("View Notes Progress button clicked!");
-        // Replace the above with your actual functionality, e.g., navigating to a new screen
-        // or showing a progress dialog.
+    @FXML
+    private void handleLogout() {
+        try {
+            DataStore.getInstance().signOut();
+            // Load the login view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            Parent root = loader.load();
+            Scene loginScene = new Scene(root);
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(loginScene);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
