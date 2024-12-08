@@ -1,17 +1,29 @@
 package org.example.studystack;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Properties;
 import java.util.Scanner;
 
 public class FirebaseAuthService {
+    private static final String apiKey;
+    
+    static {
+        try {
+            Properties props = new Properties();
+            props.load(FirebaseAuthService.class.getResourceAsStream("/config.properties"));
+            apiKey = props.getProperty("firebase.api.key");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load Firebase API key", e);
+        }
+    }
 
     /**
      * Logs in a user with the given email and password.
      */
     public static boolean login(String email, String password) {
-        String apiKey = "";
         String firebaseUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + apiKey;
 
         try {
@@ -62,7 +74,6 @@ public class FirebaseAuthService {
      * Creates a new user account with the given email and password.
      */
     public static boolean createAccount(String email, String password) {
-        String apiKey = ""; // Replace with your Firebase API key
         String firebaseUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + apiKey;
 
         try {
