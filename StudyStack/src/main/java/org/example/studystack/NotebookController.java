@@ -48,6 +48,9 @@ public class NotebookController {
 
     @FXML
     public void initialize() {
+        // Initialize Firebase at startup
+        FirebaseRealtimeDB.initialize();
+        
         //Bind the ListView to the notes list from DataStore
         notesListView.setItems(DataStore.getInstance().getNotesList());
         notesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

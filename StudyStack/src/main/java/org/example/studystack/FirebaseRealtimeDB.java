@@ -14,6 +14,7 @@ public class FirebaseRealtimeDB {
     private static DatabaseReference database;
     private static String currentUserUid = null;
     private static boolean isInitialized = false;
+    private static boolean isAuthInitialized = false;
 
     public static synchronized void initialize() {
         if (isInitialized) {
@@ -24,11 +25,32 @@ public class FirebaseRealtimeDB {
             FirebaseConnection.initialize();
             database = FirebaseDatabase.getInstance().getReference();
             isInitialized = true;
+            
+            // If we already have a user ID, initialize auth now
+            if (currentUserUid != null && !isAuthInitialized) {
+                initializeAuth(currentUserUid);
+            }
+            
             logger.info("Firebase Realtime Database initialized successfully");
         } catch (Exception e) {
             logger.severe("Failed to initialize Firebase Realtime Database: " + e.getMessage());
-            // Don't throw runtime exception, just log the error
             database = null;
+        }
+    }
+
+    private static synchronized void initializeAuth(String uid) {
+        if (isAuthInitialized) {
+            return;
+        }
+        
+        try {
+            currentUserUid = uid;
+            isAuthInitialized = true;
+            logger.info("Firebase Auth initialized with user: " + uid);
+            loadUserData();
+        } catch (Exception e) {
+            logger.severe("Failed to initialize Firebase Auth: " + e.getMessage());
+            isAuthInitialized = false;
         }
     }
 
@@ -52,16 +74,12 @@ public class FirebaseRealtimeDB {
             logger.warning("Attempted to set null user ID");
             return;
         }
+
+        // Always initialize Firebase first
+        initialize();
         
-        currentUserUid = uid;
-        logger.info("Current user set to: " + uid);
-        
-        // Initialize if not already done
-        if (ensureInitialized()) {
-            loadUserData();
-        } else {
-            logger.severe("Failed to load user data: Database not initialized");
-        }
+        // Then initialize auth
+        initializeAuth(uid);
     }
 
     public static void saveNote(Note note) {
