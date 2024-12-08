@@ -3,9 +3,11 @@ package org.example.studystack;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Properties;
 import java.util.Scanner;
+import org.json.JSONObject;
 
 public class FirebaseAuthService {
     private static final String apiKey;
@@ -28,8 +30,8 @@ public class FirebaseAuthService {
 
         try {
             // Create a connection to the Firebase REST API
-            URL url = new URL(firebaseUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            URI uri = new URI(firebaseUrl);
+            HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
@@ -52,6 +54,11 @@ public class FirebaseAuthService {
                 Scanner scanner = new Scanner(conn.getInputStream());
                 String response = scanner.useDelimiter("\\A").next();
                 scanner.close();
+
+                // Parse response and set current user
+                JSONObject responseJson = new JSONObject(response);
+                String uid = responseJson.getString("localId");
+                FirebaseRealtimeDB.setCurrentUser(uid);
 
                 System.out.println("Login successful: " + response);
                 return true;
@@ -78,8 +85,8 @@ public class FirebaseAuthService {
 
         try {
             // Create a connection to the Firebase REST API
-            URL url = new URL(firebaseUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            URI uri = new URI(firebaseUrl);
+            HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);

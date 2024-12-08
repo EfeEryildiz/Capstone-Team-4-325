@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NotebookController {
@@ -30,7 +32,10 @@ public class NotebookController {
 
     private boolean isUpdatingTextArea = false;
 
-    private Note selectedNote = null;
+    private Note currentNote = null;
+
+    private Timer saveTimer;
+    private static final int SAVE_DELAY_MS = 1000; //Stop typing in notes for 1 sec to save to db
 
     @FXML
     public void initialize() {
@@ -46,9 +51,9 @@ public class NotebookController {
             if (!isUpdatingTextArea) {
                 List<Note> selectedNotes = notesListView.getSelectionModel().getSelectedItems();
                 if (!selectedNotes.isEmpty()) {
-                    selectedNote = selectedNotes.get(selectedNotes.size() - 1); //Last selected note
+                    currentNote = selectedNotes.get(selectedNotes.size() - 1); //Last selected note
                     isUpdatingTextArea = true;
-                    noteTextArea.setText(selectedNote.getContent());
+                    noteTextArea.setText(currentNote.getContent());
                     noteTextArea.setDisable(false);
                     convertToFlashcardsButton.setDisable(false);
                     isUpdatingTextArea = false;
@@ -66,12 +71,73 @@ public class NotebookController {
                 List<Note> selectedNotes = notesListView.getSelectionModel().getSelectedItems();
                 if (!selectedNotes.isEmpty()) {
                     isUpdatingTextArea = true;
-                    //Update content for the last selected note
-                    selectedNotes.get(selectedNotes.size() - 1).setContent(newValue);
+                    Note currentNote = selectedNotes.get(selectedNotes.size() - 1);
+                    currentNote.setContent(newValue);
+                    System.out.println("Saving note: " + currentNote.getTitle() + " with content: " + newValue);
+                    FirebaseRealtimeDB.saveNote(currentNote);
                     isUpdatingTextArea = false;
                 }
             }
         });
+
+        //Initialize save timer
+        saveTimer = new Timer(true);
+
+        noteTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!isUpdatingTextArea && currentNote != null) {
+                currentNote.setContent(newValue);
+                scheduleSave();
+            }
+        });
+
+        notesListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                if (oldValue != null) {
+                    saveCurrentNote();
+                }
+                currentNote = newValue;
+                isUpdatingTextArea = true;
+                noteTextArea.setText(newValue.getContent());
+                isUpdatingTextArea = false;
+            }
+        });
+
+        noteTextArea.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) { //Focus lost, time to save!
+                saveCurrentNote();
+            }
+        });
+    }
+
+    private TimerTask pendingSave = null;
+
+    private void scheduleSave() {
+        if (pendingSave != null) {
+            pendingSave.cancel();
+        }
+        
+        pendingSave = new TimerTask() {
+            @Override
+            public void run() {
+                if (currentNote != null) {
+                    Platform.runLater(() -> {
+                        FirebaseRealtimeDB.saveNote(currentNote);
+                        if (notesListView.getSelectionModel().getSelectedItem() == currentNote) {
+                            noteTextArea.requestFocus();
+                        }
+                    });
+                }
+            }
+        };
+
+        saveTimer.schedule(pendingSave, SAVE_DELAY_MS);
+    }
+
+    private void saveCurrentNote() {
+        if (currentNote != null && pendingSave != null) {
+            pendingSave.cancel();
+            FirebaseRealtimeDB.saveNote(currentNote);
+        }
     }
 
     @FXML
@@ -101,6 +167,7 @@ public class NotebookController {
                     //Create the new note and add it to the DataStore
                     Note newNote = new Note(title, "");
                     DataStore.getInstance().getNotesList().add(newNote);
+                    FirebaseRealtimeDB.saveNote(newNote);
 
                     //System.out.println("New note created: " + title); //Debug stuff
 
@@ -120,31 +187,39 @@ public class NotebookController {
     //Handle Delete Note button
     @FXML
     private void handleDeleteNote() {
-        List<Note> selectedNotes = new ArrayList<>(notesListView.getSelectionModel().getSelectedItems());
-        if (!selectedNotes.isEmpty()) {
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmation.setTitle("Delete Note(s)");
-            confirmation.setHeaderText(null);
-            confirmation.setContentText("Are you sure you want to delete the selected note(s)?");
-            Optional<ButtonType> result = confirmation.showAndWait();
+        Note selectedNote = notesListView.getSelectionModel().getSelectedItem();
+        if (selectedNote != null) {
+            Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmDialog.setTitle("Delete Note");
+            confirmDialog.setHeaderText("Delete \"" + selectedNote.getTitle() + "\"?");
+            confirmDialog.setContentText("This action cannot be undone.");
+
+            Optional<ButtonType> result = confirmDialog.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                DataStore.getInstance().getNotesList().removeAll(selectedNotes);
-                noteTextArea.clear();
-                noteTextArea.setDisable(true);
-                convertToFlashcardsButton.setDisable(true);
+                // Clear the text area if we're deleting the current note
+                if (selectedNote == currentNote) {
+                    noteTextArea.clear();
+                    noteTextArea.setDisable(true);
+                    currentNote = null;
+                }
+                
+                // Delete from Firebase
+                FirebaseRealtimeDB.deleteNote(selectedNote);
+                
+                // Remove from local list and update UI
+                Platform.runLater(() -> {
+                    DataStore.getInstance().getNotesList().remove(selectedNote);
+                    notesListView.getSelectionModel().clearSelection();
+                    convertToFlashcardsButton.setDisable(true);
+                });
             }
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("No Selection");
-            alert.setHeaderText(null);
-            alert.setContentText("Please select at least one note to delete.");
-            alert.showAndWait();
         }
     }
 
     //Handle the convert to flashcards
     @FXML
     private void handleConvertToFlashcards() {
+        saveCurrentNote(); // Save before converting
         List<Note> selectedNotes = new ArrayList<>(notesListView.getSelectionModel().getSelectedItems());
 
         if (selectedNotes.isEmpty()) {
@@ -268,5 +343,13 @@ public class NotebookController {
         }).start(); //Start the background thread
 
         dialog.showAndWait();
+    }
+
+    // Add this to ensure we save when closing/switching views
+    public void onClose() {
+        saveCurrentNote();
+        if (saveTimer != null) {
+            saveTimer.cancel();
+        }
     }
 }

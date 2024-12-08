@@ -31,12 +31,12 @@ public class FirebaseConnection {
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl("https://capstone-team-4-e2207-default-rtdb.firebaseio.com")
+                    .setDatabaseUrl("https://studystack-app-default-rtdb.firebaseio.com/")
                     .build();
 
             FirebaseApp.initializeApp(options);
             initialized = true;
-            logger.info("Firebase initialized successfully.");
+            logger.info("Firebase initialized successfully with database URL: " + options.getDatabaseUrl());
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to initialize Firebase.", e);
         }
