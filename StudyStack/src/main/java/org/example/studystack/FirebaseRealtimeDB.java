@@ -25,6 +25,14 @@ public class FirebaseRealtimeDB {
         }
     }
 
+    private static boolean checkAuthentication() {
+        if (currentUserUid == null) {
+            logger.warning("No user is currently logged in");
+            return false;
+        }
+        return true;
+    }
+
     public static void setCurrentUser(String uid) {
         currentUserUid = uid;
         logger.info("Current user set to: " + uid);
@@ -32,30 +40,30 @@ public class FirebaseRealtimeDB {
     }
 
     public static void saveNote(Note note) {
-        if (currentUserUid == null) {
+        if (!checkAuthentication() || note == null || note.getContent() == null) {
             return;
         }
 
-        DatabaseReference userNotesRef = database.child("users").child(currentUserUid).child("notes");
-        logger.info("Attempting to save note to path: " + userNotesRef.getPath().toString());
-        
+        DatabaseReference userNotesRef = database.child("users")
+                .child(currentUserUid)
+                .child("notes")
+                .child(note.getTitle());
 
         Map<String, String> noteData = new HashMap<>();
         noteData.put("title", note.getTitle());
         noteData.put("content", note.getContent());
 
-        userNotesRef.child(note.getTitle()).setValue(noteData, (error, ref) -> {
+        userNotesRef.updateChildren(new HashMap<>(noteData), (error, ref) -> {
             if (error == null) {
                 logger.info("Note saved successfully to: " + ref.getPath().toString());
             } else {
-                logger.severe("Failed to save note: " + error.getMessage() + "\nDetails: " + error.getDetails());
+                logger.severe("Failed to save note: " + error.getMessage());
             }
         });
     }
 
     public static void deleteNote(Note note) {
-        if (currentUserUid == null) {
-            logger.warning("Cannot delete note: No user is currently logged in");
+        if (!checkAuthentication()) {
             return;
         }
 
@@ -76,8 +84,7 @@ public class FirebaseRealtimeDB {
     }
 
     public static void saveDeck(Deck deck) {
-        if (currentUserUid == null) {
-            logger.warning("Cannot save deck: No user is currently logged in");
+        if (!checkAuthentication()) {
             return;
         }
 
@@ -107,8 +114,7 @@ public class FirebaseRealtimeDB {
     }
 
     public static void deleteDeck(Deck deck) {
-        if (currentUserUid == null) {
-            logger.warning("Cannot delete deck: No user is currently logged in");
+        if (!checkAuthentication()) {
             return;
         }
 
@@ -130,23 +136,31 @@ public class FirebaseRealtimeDB {
 
     private static void loadUserData() {
         if (currentUserUid == null) return;
-        
-        // Clear existing data first
-        DataStore.getInstance().clear();
 
-        // Load notes
         DatabaseReference userNotesRef = database.child("users").child(currentUserUid).child("notes");
         userNotesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Platform.runLater(() -> {
-                    DataStore.getInstance().getNotesList().clear(); // Clear again before loading new data
+                    Map<String, Note> existingNotes = new HashMap<>();
+                    DataStore.getInstance().getNotesList().forEach(note -> 
+                        existingNotes.put(note.getTitle(), note));
+
                     for (DataSnapshot noteSnapshot : snapshot.getChildren()) {
                         String title = noteSnapshot.child("title").getValue(String.class);
                         String content = noteSnapshot.child("content").getValue(String.class);
                         if (title != null && content != null) {
-                            Note note = new Note(title, content);
-                            DataStore.getInstance().getNotesList().add(note);
+                            Note existingNote = existingNotes.get(title);
+                            if (existingNote != null) {
+                                // Only update if content is different
+                                if (!content.equals(existingNote.getContent())) {
+                                    existingNote.setContent(content);
+                                }
+                            } else {
+                                // Add new note
+                                Note newNote = new Note(title, content);
+                                DataStore.getInstance().getNotesList().add(newNote);
+                            }
                         }
                     }
                 });
@@ -155,53 +169,6 @@ public class FirebaseRealtimeDB {
             @Override
             public void onCancelled(DatabaseError error) {
                 logger.severe("Failed to load notes: " + error.getMessage());
-            }
-        });
-
-        // Load decks
-        DatabaseReference userDecksRef = database.child("users").child(currentUserUid).child("decks");
-        userDecksRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                Platform.runLater(() -> {
-                    DataStore.getInstance().getDecksList().clear(); // Clear again before loading new data
-                    for (DataSnapshot deckSnapshot : snapshot.getChildren()) {
-                        String name = deckSnapshot.child("name").getValue(String.class);
-                        if (name != null) {
-                            Deck deck = new Deck(name);
-                            // Load flashcards if they exist
-                            DataSnapshot flashcardsSnapshot = deckSnapshot.child("flashcards");
-                            if (flashcardsSnapshot.exists()) {
-                                for (DataSnapshot cardSnapshot : flashcardsSnapshot.getChildren()) {
-                                    String question = cardSnapshot.child("question").getValue(String.class);
-                                    String answer = cardSnapshot.child("answer").getValue(String.class);
-                                    if (question != null && answer != null) {
-                                        Flashcard card = new Flashcard(question, answer);
-                                        // Load options if they exist
-                                        DataSnapshot optionsSnapshot = cardSnapshot.child("options");
-                                        if (optionsSnapshot.exists()) {
-                                            List<String> options = new ArrayList<>();
-                                            for (DataSnapshot optionSnapshot : optionsSnapshot.getChildren()) {
-                                                String option = optionSnapshot.getValue(String.class);
-                                                if (option != null) {
-                                                    options.add(option);
-                                                }
-                                            }
-                                            card.setOptions(options);
-                                        }
-                                        deck.getFlashcards().add(card);
-                                    }
-                                }
-                            }
-                            DataStore.getInstance().getDecksList().add(deck);
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                logger.severe("Failed to load decks: " + error.getMessage());
             }
         });
     }
