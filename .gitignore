@@ -34,3 +34,10 @@ Key.json
 StudyStack/src/main/resources/Key.json
 **/Key.json
 **/resources/Key.json
+
+src/main/resources/serviceAccountKey.json
+serviceAccountKey.json
+StudyStack/src/main/resources/serviceAccountKey.json
+**/serviceAccountKey.json
+**/resources/serviceAccountKey.json
+
