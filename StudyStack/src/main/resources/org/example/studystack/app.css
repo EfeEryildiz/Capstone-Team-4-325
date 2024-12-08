@@ -421,6 +421,34 @@
     -fx-padding: 0 0 10 0;
 }
 
+/* Button Container for Notes */
+.button-container {
+    -fx-spacing: 5;
+    -fx-padding: 10 10 15 10;
+    -fx-alignment: center;
+}
+
+.button-container .modern-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8px 12px;   
+    -fx-background-radius: 5px;
+    -fx-border-radius: 5px;
+    -fx-font-weight: bold;
+    -fx-min-width: 150px;
+    -fx-max-width: 150px;
+    -fx-effect: none;
+}
+
+.button-container .modern-button:hover {
+    -fx-background-color: #45A049;
+}
+
+.button-container .modern-button:pressed {
+    -fx-background-color: #388E3C;
+}
+
 
 
 

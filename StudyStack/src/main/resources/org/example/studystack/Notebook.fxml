@@ -9,10 +9,10 @@
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.studystack.NotebookController" spacing="20" alignment="CENTER" styleClass="notebook-container">
     <children>
         <!-- Button Section -->
-        <HBox spacing="15" alignment="CENTER" styleClass="button-container">
+        <HBox spacing="5" alignment="CENTER" styleClass="button-container">
             <Button text="New Note" onAction="#handleNewNote" fx:id="newNoteButton" styleClass="modern-button" />
             <Button text="Delete Note" onAction="#handleDeleteNote" fx:id="deleteNoteButton" styleClass="modern-button" />
-            <Button text="Convert to Flashcards" onAction="#handleConvertToFlashcards" fx:id="convertToFlashcardsButton" styleClass="modern-button" />
+            <Button text="Convert to Cards" onAction="#handleConvertToFlashcards" fx:id="convertToFlashcardsButton" styleClass="modern-button" />
         </HBox>
 
         <!-- Content Section -->

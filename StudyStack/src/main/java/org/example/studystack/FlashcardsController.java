@@ -179,9 +179,15 @@ public class FlashcardsController {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 selectedDeck.getFlashcards().remove(selectedFlashcard);
                 flashcardsListView.getSelectionModel().clearSelection();
-                flashcardEditorVBox.setVisible(false);
-                questionField.clear();
-                answerArea.clear();
+                if (flashcardEditorVBox != null) {
+                    flashcardEditorVBox.setVisible(false);
+                }
+                if (questionField != null) {
+                    questionField.clear();
+                }
+                if (answerArea != null) {
+                    answerArea.clear();
+                }
                 FirebaseRealtimeDB.saveDeck(selectedDeck);
             }
         } else if (selectedDeck != null) {
@@ -197,9 +203,15 @@ public class FlashcardsController {
                 FirebaseRealtimeDB.deleteDeck(selectedDeck);
                 decksListView.getSelectionModel().clearSelection();
                 flashcardsListView.setItems(null);
-                flashcardEditorVBox.setVisible(false);
-                questionField.clear();
-                answerArea.clear();
+                if (flashcardEditorVBox != null) {
+                    flashcardEditorVBox.setVisible(false);
+                }
+                if (questionField != null) {
+                    questionField.clear();
+                }
+                if (answerArea != null) {
+                    answerArea.clear();
+                }
             }
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
