@@ -211,15 +211,39 @@ public class FirebaseRealtimeDB {
             }
             deckData.put("flashcards", flashcardsData);
 
+            // Add debug logging
+            logger.info("Deck data to save: " + deckData.toString());
+
             userDecksRef.child(deck.getName()).setValue(deckData, (error, ref) -> {
                 if (error == null) {
                     logger.info("Deck saved successfully to: " + ref.getPath().toString());
                 } else {
-                    logger.severe("Failed to save deck: " + error.getMessage());
+                    logger.severe("Failed to save deck: " + error.getMessage() + 
+                                "\nDetails: " + error.getDetails() +
+                                "\nCode: " + error.getCode());
+                    // Add stack trace for more context
+                    error.toException().printStackTrace();
                 }
             });
+
+            // Add completion listener to database reference
+            userDecksRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    logger.info("Database updated. Current data at " + snapshot.getRef().getPath() + ": " + snapshot.getValue());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    logger.severe("Database operation cancelled: " + error.getMessage() + 
+                                "\nDetails: " + error.getDetails() +
+                                "\nCode: " + error.getCode());
+                }
+            });
+
         } catch (Exception e) {
             logger.severe("Error saving deck: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
