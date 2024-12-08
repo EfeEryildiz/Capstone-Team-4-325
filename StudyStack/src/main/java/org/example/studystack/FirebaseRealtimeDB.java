@@ -40,6 +40,7 @@ public class FirebaseRealtimeDB {
 
     private static synchronized void initializeAuth(String uid) {
         if (isAuthInitialized) {
+            logger.info("Auth already initialized for user: " + currentUserUid);
             return;
         }
         
@@ -51,6 +52,7 @@ public class FirebaseRealtimeDB {
         } catch (Exception e) {
             logger.severe("Failed to initialize Firebase Auth: " + e.getMessage());
             isAuthInitialized = false;
+            currentUserUid = null;  // Reset on failure
         }
     }
 
@@ -62,14 +64,28 @@ public class FirebaseRealtimeDB {
     }
 
     private static boolean checkAuthentication() {
+        logger.info("Checking authentication - User ID: " + currentUserUid + 
+                   ", Auth Initialized: " + isAuthInitialized + 
+                   ", DB Initialized: " + isInitialized);
+        
         if (currentUserUid == null) {
             logger.warning("No user is currently logged in");
+            return false;
+        }
+        if (!isAuthInitialized) {
+            logger.warning("Auth not initialized");
+            return false;
+        }
+        if (!isInitialized) {
+            logger.warning("Database not initialized");
             return false;
         }
         return true;
     }
 
     public static void setCurrentUser(String uid) {
+        logger.info("Setting current user: " + uid);
+        
         if (uid == null) {
             logger.warning("Attempted to set null user ID");
             return;
@@ -78,8 +94,17 @@ public class FirebaseRealtimeDB {
         // Always initialize Firebase first
         initialize();
         
+        if (!isInitialized) {
+            logger.severe("Failed to initialize Firebase before setting user");
+            return;
+        }
+        
         // Then initialize auth
         initializeAuth(uid);
+        
+        logger.info("Current user set successfully: " + uid + 
+                   " (Auth Initialized: " + isAuthInitialized + 
+                   ", DB Initialized: " + isInitialized + ")");
     }
 
     public static void saveNote(Note note) {
@@ -127,14 +152,19 @@ public class FirebaseRealtimeDB {
     }
 
     public static void saveDeck(Deck deck) {
+        logger.info("Attempting to save deck: " + deck.getName());
+        
         if (!checkAuthentication() || !ensureInitialized()) {
-            logger.warning("Cannot save deck: Database not initialized or user not logged in");
+            logger.warning("Cannot save deck: Database not initialized or user not logged in" +
+                         " (User: " + currentUserUid + 
+                         ", Auth Init: " + isAuthInitialized + 
+                         ", DB Init: " + isInitialized + ")");
             return;
         }
 
         try {
             DatabaseReference userDecksRef = database.child("users").child(currentUserUid).child("decks");
-            logger.info("Attempting to save deck to path: " + userDecksRef.getPath().toString());
+            logger.info("Saving deck to path: " + userDecksRef.getPath().toString());
 
             Map<String, Object> deckData = new HashMap<>();
             deckData.put("name", deck.getName());
