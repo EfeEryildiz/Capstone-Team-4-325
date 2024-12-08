@@ -18,11 +18,18 @@ public class FirebaseRealtimeDB {
 
     public static synchronized void initialize() {
         if (isInitialized) {
+            logger.info("Firebase Realtime Database already initialized");
             return;
         }
 
         try {
+            // Make sure basic Firebase is initialized first
             FirebaseConnection.initialize();
+            
+            if (!FirebaseConnection.isInitialized()) {
+                throw new RuntimeException("Firebase Connection not initialized");
+            }
+
             database = FirebaseDatabase.getInstance().getReference();
             isInitialized = true;
             
@@ -34,7 +41,9 @@ public class FirebaseRealtimeDB {
             logger.info("Firebase Realtime Database initialized successfully");
         } catch (Exception e) {
             logger.severe("Failed to initialize Firebase Realtime Database: " + e.getMessage());
+            e.printStackTrace();
             database = null;
+            throw new RuntimeException("Failed to initialize Firebase Realtime Database", e);
         }
     }
 
