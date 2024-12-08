@@ -48,6 +48,8 @@ public class FirebaseRealtimeDB {
     }
 
     private static synchronized void initializeAuth(String uid) {
+        logger.info("Initializing auth for user: " + uid);
+        
         if (isAuthInitialized) {
             logger.info("Auth already initialized for user: " + currentUserUid);
             return;
@@ -57,11 +59,21 @@ public class FirebaseRealtimeDB {
             currentUserUid = uid;
             isAuthInitialized = true;
             logger.info("Firebase Auth initialized with user: " + uid);
-            loadUserData();
+            
+            // Load user data after successful auth
+            Platform.runLater(() -> {
+                try {
+                    loadUserData();
+                    logger.info("User data loaded successfully");
+                } catch (Exception e) {
+                    logger.severe("Error loading user data: " + e.getMessage());
+                }
+            });
         } catch (Exception e) {
             logger.severe("Failed to initialize Firebase Auth: " + e.getMessage());
             isAuthInitialized = false;
             currentUserUid = null;  // Reset on failure
+            e.printStackTrace();
         }
     }
 
@@ -93,27 +105,39 @@ public class FirebaseRealtimeDB {
     }
 
     public static void setCurrentUser(String uid) {
-        logger.info("Setting current user: " + uid);
+        logger.info("Setting current user: " + uid + " (called from: " + 
+            Thread.currentThread().getStackTrace()[2].getClassName() + ")");
         
         if (uid == null) {
             logger.warning("Attempted to set null user ID");
             return;
         }
 
-        // Always initialize Firebase first
-        initialize();
-        
-        if (!isInitialized) {
-            logger.severe("Failed to initialize Firebase before setting user");
-            return;
+        try {
+            // Always initialize Firebase first
+            initialize();
+            
+            if (!isInitialized) {
+                logger.severe("Failed to initialize Firebase before setting user");
+                return;
+            }
+            
+            // Then initialize auth
+            initializeAuth(uid);
+            
+            // Verify initialization was successful
+            if (!isAuthInitialized || currentUserUid == null) {
+                logger.severe("Auth initialization failed silently");
+                return;
+            }
+            
+            logger.info("Current user set successfully: " + uid + 
+                       " (Auth Initialized: " + isAuthInitialized + 
+                       ", DB Initialized: " + isInitialized + ")");
+        } catch (Exception e) {
+            logger.severe("Error setting current user: " + e.getMessage());
+            e.printStackTrace();
         }
-        
-        // Then initialize auth
-        initializeAuth(uid);
-        
-        logger.info("Current user set successfully: " + uid + 
-                   " (Auth Initialized: " + isAuthInitialized + 
-                   ", DB Initialized: " + isInitialized + ")");
     }
 
     public static void saveNote(Note note) {
@@ -223,6 +247,7 @@ public class FirebaseRealtimeDB {
     private static void loadUserData() {
         if (currentUserUid == null) return;
 
+        // Load notes
         DatabaseReference userNotesRef = database.child("users").child(currentUserUid).child("notes");
         userNotesRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -255,6 +280,51 @@ public class FirebaseRealtimeDB {
             @Override
             public void onCancelled(DatabaseError error) {
                 logger.severe("Failed to load notes: " + error.getMessage());
+            }
+        });
+
+        // Load decks
+        DatabaseReference userDecksRef = database.child("users").child(currentUserUid).child("decks");
+        userDecksRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Platform.runLater(() -> {
+                    Map<String, Deck> existingDecks = new HashMap<>();
+                    DataStore.getInstance().getDecksList().forEach(deck -> 
+                        existingDecks.put(deck.getName(), deck));
+
+                    for (DataSnapshot deckSnapshot : snapshot.getChildren()) {
+                        String name = deckSnapshot.child("name").getValue(String.class);
+                        if (name != null) {
+                            Deck existingDeck = existingDecks.get(name);
+                            if (existingDeck == null) {
+                                // Create new deck
+                                existingDeck = new Deck(name);
+                                DataStore.getInstance().getDecksList().add(existingDeck);
+                            }
+                            
+                            // Clear existing flashcards
+                            existingDeck.getFlashcards().clear();
+                            
+                            // Load flashcards
+                            DataSnapshot flashcardsSnapshot = deckSnapshot.child("flashcards");
+                            for (DataSnapshot cardSnapshot : flashcardsSnapshot.getChildren()) {
+                                String question = cardSnapshot.child("question").getValue(String.class);
+                                String answer = cardSnapshot.child("answer").getValue(String.class);
+                                if (question != null && answer != null) {
+                                    existingDeck.getFlashcards().add(new Flashcard(question, answer));
+                                }
+                            }
+                            logger.info("Loaded deck: " + name + " with " + 
+                                      existingDeck.getFlashcards().size() + " flashcards");
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                logger.severe("Failed to load decks: " + error.getMessage());
             }
         });
     }
