@@ -11,18 +11,32 @@ import java.util.logging.Logger;
 
 public class FirebaseRealtimeDB {
     private static final Logger logger = Logger.getLogger(FirebaseRealtimeDB.class.getName());
-    private static final DatabaseReference database;
+    private static DatabaseReference database;
     private static String currentUserUid = null;
+    private static boolean isInitialized = false;
 
-    static {
+    public static synchronized void initialize() {
+        if (isInitialized) {
+            return;
+        }
+
         try {
             FirebaseConnection.initialize();
             database = FirebaseDatabase.getInstance().getReference();
+            isInitialized = true;
             logger.info("Firebase Realtime Database initialized successfully");
         } catch (Exception e) {
             logger.severe("Failed to initialize Firebase Realtime Database: " + e.getMessage());
-            throw new RuntimeException("Failed to initialize Firebase Realtime Database", e);
+            // Don't throw runtime exception, just log the error
+            database = null;
         }
+    }
+
+    private static boolean ensureInitialized() {
+        if (!isInitialized) {
+            initialize();
+        }
+        return database != null;
     }
 
     private static boolean checkAuthentication() {
@@ -34,9 +48,20 @@ public class FirebaseRealtimeDB {
     }
 
     public static void setCurrentUser(String uid) {
+        if (uid == null) {
+            logger.warning("Attempted to set null user ID");
+            return;
+        }
+        
         currentUserUid = uid;
         logger.info("Current user set to: " + uid);
-        loadUserData();
+        
+        // Initialize if not already done
+        if (ensureInitialized()) {
+            loadUserData();
+        } else {
+            logger.severe("Failed to load user data: Database not initialized");
+        }
     }
 
     public static void saveNote(Note note) {
@@ -84,33 +109,37 @@ public class FirebaseRealtimeDB {
     }
 
     public static void saveDeck(Deck deck) {
-        if (!checkAuthentication()) {
+        if (!checkAuthentication() || !ensureInitialized()) {
+            logger.warning("Cannot save deck: Database not initialized or user not logged in");
             return;
         }
 
-        DatabaseReference userDecksRef = database.child("users").child(currentUserUid).child("decks");
-        logger.info("Attempting to save deck to path: " + userDecksRef.getPath().toString());
+        try {
+            DatabaseReference userDecksRef = database.child("users").child(currentUserUid).child("decks");
+            logger.info("Attempting to save deck to path: " + userDecksRef.getPath().toString());
 
-        Map<String, Object> deckData = new HashMap<>();
-        deckData.put("name", deck.getName());
-        
-        
-        List<Map<String, String>> flashcardsData = new ArrayList<>();
-        for (Flashcard card : deck.getFlashcards()) {
-            Map<String, String> cardData = new HashMap<>();
-            cardData.put("question", card.getQuestion());
-            cardData.put("answer", card.getAnswer());
-            flashcardsData.add(cardData);
-        }
-        deckData.put("flashcards", flashcardsData);
-
-        userDecksRef.child(deck.getName()).setValue(deckData, (error, ref) -> {
-            if (error == null) {
-                logger.info("Deck saved successfully to: " + ref.getPath().toString());
-            } else {
-                logger.severe("Failed to save deck: " + error.getMessage());
+            Map<String, Object> deckData = new HashMap<>();
+            deckData.put("name", deck.getName());
+            
+            List<Map<String, String>> flashcardsData = new ArrayList<>();
+            for (Flashcard card : deck.getFlashcards()) {
+                Map<String, String> cardData = new HashMap<>();
+                cardData.put("question", card.getQuestion());
+                cardData.put("answer", card.getAnswer());
+                flashcardsData.add(cardData);
             }
-        });
+            deckData.put("flashcards", flashcardsData);
+
+            userDecksRef.child(deck.getName()).setValue(deckData, (error, ref) -> {
+                if (error == null) {
+                    logger.info("Deck saved successfully to: " + ref.getPath().toString());
+                } else {
+                    logger.severe("Failed to save deck: " + error.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            logger.severe("Error saving deck: " + e.getMessage());
+        }
     }
 
     public static void deleteDeck(Deck deck) {

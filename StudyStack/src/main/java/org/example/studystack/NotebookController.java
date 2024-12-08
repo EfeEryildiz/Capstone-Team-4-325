@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 public class NotebookController {
 
@@ -42,6 +43,8 @@ public class NotebookController {
 
     private int lastCaretPosition = 0;
     private boolean isLoadingData = false;
+
+    private static final Logger logger = Logger.getLogger(NotebookController.class.getName());
 
     @FXML
     public void initialize() {
@@ -208,14 +211,25 @@ public class NotebookController {
     //Handle the convert to flashcards
     @FXML
     private void handleConvertToFlashcards() {
-        saveCurrentNote(); // Save before converting
-        List<Note> selectedNotes = new ArrayList<>(notesListView.getSelectionModel().getSelectedItems());
-
+        List<Note> selectedNotes = notesListView.getSelectionModel().getSelectedItems();
         if (selectedNotes.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("No Notes Selected");
+            alert.setTitle("No Selection");
             alert.setHeaderText(null);
-            alert.setContentText("Please select a Note to convert to Flashcards.");
+            alert.setContentText("Please select at least one note to convert.");
+            alert.showAndWait();
+            return;
+        }
+
+        // Initialize Firebase if not already done
+        try {
+            FirebaseRealtimeDB.initialize();
+        } catch (Exception e) {
+            logger.severe("Failed to initialize Firebase: " + e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Database Error");
+            alert.setHeaderText("Failed to connect to database");
+            alert.setContentText("Please check your internet connection and try again.");
             alert.showAndWait();
             return;
         }
@@ -229,29 +243,26 @@ public class NotebookController {
             for (Note note : selectedNotes) {
                 try {
                     String deckName = note.getTitle() + " (AI)";
-
-                    boolean duplicateDeck = DataStore.getInstance().getDecksList().stream()
-                            .anyMatch(deck -> deck.getName().equalsIgnoreCase(deckName));
-                    if (duplicateDeck) {
-                        failureCount.incrementAndGet();
-                        continue;
-                    }
-
                     Deck newDeck = new Deck(deckName);
                     List<Flashcard> generatedFlashcards = OpenAIAPIController.generateFlashcards(note.getContent());
 
                     if (generatedFlashcards != null && !generatedFlashcards.isEmpty()) {
                         Platform.runLater(() -> {
-                            DataStore.getInstance().getDecksList().add(newDeck);
-                            newDeck.getFlashcards().addAll(generatedFlashcards);
-                            FirebaseRealtimeDB.saveDeck(newDeck);
+                            try {
+                                DataStore.getInstance().getDecksList().add(newDeck);
+                                newDeck.getFlashcards().addAll(generatedFlashcards);
+                                FirebaseRealtimeDB.saveDeck(newDeck);
+                                successCount.incrementAndGet();
+                            } catch (Exception e) {
+                                logger.severe("Error saving deck: " + e.getMessage());
+                                failureCount.incrementAndGet();
+                            }
                         });
-                        successCount.incrementAndGet();
                     } else {
                         failureCount.incrementAndGet();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.severe("Error converting note: " + e.getMessage());
                     failureCount.incrementAndGet();
                 }
             }
@@ -260,7 +271,11 @@ public class NotebookController {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Conversion Complete");
                 alert.setHeaderText(null);
-                alert.setContentText("Successfully converted " + successCount.get() + " notes to flashcards.");
+                String message = String.format("Successfully converted %d notes to flashcards.\n", successCount.get());
+                if (failureCount.get() > 0) {
+                    message += String.format("Failed to convert %d notes.", failureCount.get());
+                }
+                alert.setContentText(message);
                 alert.showAndWait();
             });
         });
