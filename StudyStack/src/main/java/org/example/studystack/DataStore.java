@@ -40,4 +40,9 @@ public class DataStore {
     public String getCurrentUserEmail() {
         return currentUserEmail;
     }
+
+    public void clear() {
+        notesList.clear();
+        decksList.clear();
+    }
 }

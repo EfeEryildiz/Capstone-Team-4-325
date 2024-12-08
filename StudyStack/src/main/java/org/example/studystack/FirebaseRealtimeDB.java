@@ -130,31 +130,23 @@ public class FirebaseRealtimeDB {
 
     private static void loadUserData() {
         if (currentUserUid == null) return;
+        
+        // Clear existing data first
+        DataStore.getInstance().clear();
 
-        // Load notes (existing code)
+        // Load notes
         DatabaseReference userNotesRef = database.child("users").child(currentUserUid).child("notes");
         userNotesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Platform.runLater(() -> {
+                    DataStore.getInstance().getNotesList().clear(); // Clear again before loading new data
                     for (DataSnapshot noteSnapshot : snapshot.getChildren()) {
                         String title = noteSnapshot.child("title").getValue(String.class);
                         String content = noteSnapshot.child("content").getValue(String.class);
                         if (title != null && content != null) {
-                            // Find existing note or create new one
-                            Note existingNote = DataStore.getInstance().getNotesList().stream()
-                                .filter(n -> n.getTitle().equals(title))
-                                .findFirst()
-                                .orElse(null);
-                                
-                            if (existingNote != null) {
-                                if (!existingNote.getContent().equals(content)) {
-                                    existingNote.setContent(content);
-                                }
-                            } else {
-                                // Add new note
-                                DataStore.getInstance().getNotesList().add(new Note(title, content));
-                            }
+                            Note note = new Note(title, content);
+                            DataStore.getInstance().getNotesList().add(note);
                         }
                     }
                 });
@@ -172,35 +164,36 @@ public class FirebaseRealtimeDB {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Platform.runLater(() -> {
+                    DataStore.getInstance().getDecksList().clear(); // Clear again before loading new data
                     for (DataSnapshot deckSnapshot : snapshot.getChildren()) {
                         String name = deckSnapshot.child("name").getValue(String.class);
                         if (name != null) {
-                            // Find existing deck or create new one
-                            Deck existingDeck = DataStore.getInstance().getDecksList().stream()
-                                .filter(d -> d.getName().equals(name))
-                                .findFirst()
-                                .orElse(null);
-
-                            List<Flashcard> flashcards = new ArrayList<>();
+                            Deck deck = new Deck(name);
+                            // Load flashcards if they exist
                             DataSnapshot flashcardsSnapshot = deckSnapshot.child("flashcards");
-                            for (DataSnapshot cardSnapshot : flashcardsSnapshot.getChildren()) {
-                                String question = cardSnapshot.child("question").getValue(String.class);
-                                String answer = cardSnapshot.child("answer").getValue(String.class);
-                                if (question != null && answer != null) {
-                                    flashcards.add(new Flashcard(question, answer));
+                            if (flashcardsSnapshot.exists()) {
+                                for (DataSnapshot cardSnapshot : flashcardsSnapshot.getChildren()) {
+                                    String question = cardSnapshot.child("question").getValue(String.class);
+                                    String answer = cardSnapshot.child("answer").getValue(String.class);
+                                    if (question != null && answer != null) {
+                                        Flashcard card = new Flashcard(question, answer);
+                                        // Load options if they exist
+                                        DataSnapshot optionsSnapshot = cardSnapshot.child("options");
+                                        if (optionsSnapshot.exists()) {
+                                            List<String> options = new ArrayList<>();
+                                            for (DataSnapshot optionSnapshot : optionsSnapshot.getChildren()) {
+                                                String option = optionSnapshot.getValue(String.class);
+                                                if (option != null) {
+                                                    options.add(option);
+                                                }
+                                            }
+                                            card.setOptions(options);
+                                        }
+                                        deck.getFlashcards().add(card);
+                                    }
                                 }
                             }
-
-                            if (existingDeck != null) {
-                                // Update existing deck
-                                existingDeck.getFlashcards().clear();
-                                existingDeck.getFlashcards().addAll(flashcards);
-                            } else {
-                                // Create new deck
-                                Deck newDeck = new Deck(name);
-                                newDeck.getFlashcards().addAll(flashcards);
-                                DataStore.getInstance().getDecksList().add(newDeck);
-                            }
+                            DataStore.getInstance().getDecksList().add(deck);
                         }
                     }
                 });
