@@ -285,6 +285,7 @@ public class NotebookController {
                         //Add flashcards to the newly created deck
                         Platform.runLater(() -> {
                             newDeck.getFlashcards().addAll(generatedFlashcards);
+                            FirebaseRealtimeDB.saveDeck(newDeck);
                             System.out.println("Added " + generatedFlashcards.size() + " flashcards to deck '" + deckName + "'.");
                         });
                         successCount.incrementAndGet();

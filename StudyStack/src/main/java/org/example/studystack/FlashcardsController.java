@@ -144,15 +144,12 @@ public class FlashcardsController {
 
             Platform.runLater(() -> {
                 selectedDeck.getFlashcards().add(newFlashcard);
+                // Save to Firebase after adding the flashcard
+                FirebaseRealtimeDB.saveDeck(selectedDeck);
+                
                 flashcardEditorVBox.setVisible(false);
                 questionField.clear();
                 answerArea.clear();
-
-//                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-//                alert.setTitle("Flashcard Created");
-//                alert.setHeaderText(null);
-//                alert.setContentText("The flashcard has been successfully created and added to the deck.");
-//                alert.showAndWait();
             });
         }).start();
     }
