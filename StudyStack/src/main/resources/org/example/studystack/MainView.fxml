@@ -22,9 +22,9 @@
   <left>
     <VBox spacing="15" styleClass="nav-bar">
       <Button onAction="#loadHomePage" prefHeight="70.0" prefWidth="120.0" styleClass="nav-button" text="Home" />
+      <Button onAction="#loadNotebookPage" prefHeight="70.0" prefWidth="120.0" styleClass="nav-button" text="Notes" />
       <Button onAction="#loadFlashcardsPage" prefHeight="70.0" prefWidth="120.0" styleClass="nav-button" text="Flashcards" />
-      <Button onAction="#loadQuizModePage" prefHeight="70.0" prefWidth="120.0" styleClass="nav-button" text="Quiz Mode" />
-      <Button onAction="#loadNotebookPage" prefHeight="70.0" prefWidth="116.0" styleClass="nav-button" text="Notebook" />
+      <Button onAction="#loadQuizModePage" prefHeight="70.0" prefWidth="120.0" styleClass="nav-button" text="Quizzes" />
 
 
     </VBox>
