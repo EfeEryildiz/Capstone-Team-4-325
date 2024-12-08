@@ -18,7 +18,7 @@ public class FirebaseConnection {
     private static final Logger logger = Logger.getLogger(FirebaseConnection.class.getName());
     private static boolean isInitialized = false;
     private static final String DATABASE_URL = "https://studystack-app-default-rtdb.firebaseio.com/";
-    private static final String SERVICE_ACCOUNT_PATH = "serviceAccountKey.json";
+    private static final String SERVICE_ACCOUNT_PATH = "Key.json";
 
     public static synchronized void initialize() {
         if (isInitialized) {
@@ -32,7 +32,7 @@ public class FirebaseConnection {
                     .getResourceAsStream(SERVICE_ACCOUNT_PATH);
             
             if (serviceAccount == null) {
-                logger.warning("Service account file not found in resources, trying alternative path");
+                logger.warning("Key.json not found in resources, trying alternative path");
                 // Try to load from project root
                 serviceAccount = new FileInputStream(SERVICE_ACCOUNT_PATH);
             }
