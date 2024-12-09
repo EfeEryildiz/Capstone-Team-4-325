@@ -17,15 +17,6 @@ public class FlashcardsController {
     private ListView<Flashcard> flashcardsListView;
 
     @FXML
-    private VBox flashcardEditorVBox;
-
-    @FXML
-    private TextField questionField;
-
-    @FXML
-    private TextArea answerArea;
-
-    @FXML
     private Button saveFlashcardButton;
 
     @FXML
@@ -38,26 +29,14 @@ public class FlashcardsController {
         //Bind the ListView to the decks list from DataStore
         decksListView.setItems(DataStore.getInstance().getDecksList());
 
-        //Initially disable the flashcard editor
-        if (flashcardEditorVBox != null) {
-            flashcardEditorVBox.setDisable(true);
-            flashcardEditorVBox.setVisible(false);
-        }
-
         //Handle deck selection changes
         decksListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             selectedDeck = newValue;
             if (newValue != null) {
                 flashcardsListView.setItems(newValue.getFlashcards());
-                if (flashcardEditorVBox != null) {
-                    flashcardEditorVBox.setDisable(false);
-                }
                 deleteButton.setText("Delete Deck");
             } else {
                 flashcardsListView.setItems(null);
-                if (flashcardEditorVBox != null) {
-                    flashcardEditorVBox.setDisable(true);
-                }
             }
         });
 
@@ -68,6 +47,14 @@ public class FlashcardsController {
             } else if (selectedDeck != null) {
                 deleteButton.setText("Delete Deck");
             }
+        });
+
+        // Add click handler for the decksListView
+        decksListView.setOnMouseClicked(event -> {
+            // When clicking a deck (even if already selected), update button text
+            deleteButton.setText("Delete Deck");
+            // Clear any selected flashcard
+            flashcardsListView.getSelectionModel().clearSelection();
         });
     }
 
@@ -108,7 +95,70 @@ public class FlashcardsController {
     @FXML
     private void handleNewFlashcard() {
         if (selectedDeck != null) {
-            flashcardEditorVBox.setVisible(true);
+            // Create a new dialog
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setTitle("New Flashcard");
+            dialog.setHeaderText("Create a New Flashcard");
+
+            // Create the dialog content
+            VBox content = new VBox(10);
+            TextField questionField = new TextField();
+            questionField.setPromptText("Enter question here...");
+            TextArea answerArea = new TextArea();
+            answerArea.setPromptText("Enter answer here...");
+            answerArea.setPrefRowCount(3);
+            answerArea.setWrapText(true);
+            
+            content.getChildren().addAll(
+                new Label("Question:"),
+                questionField,
+                new Label("Answer:"),
+                answerArea
+            );
+            
+            dialog.getDialogPane().setContent(content);
+            dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+            // Show dialog and handle result
+            Optional<ButtonType> result = dialog.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                String question = questionField.getText().trim();
+                String answer = answerArea.getText().trim();
+
+                if (!question.isEmpty() && !answer.isEmpty()) {
+                    Flashcard newFlashcard = new Flashcard(question, answer);
+
+                    // Using multithreading to not block any other functionality
+                    new Thread(() -> {
+                        try {
+                            List<String> options = OpenAIAPIController.generateMultipleChoiceOptions(question, answer);
+                            if (options != null && !options.isEmpty()) {
+                                newFlashcard.setOptions(options);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Platform.runLater(() -> {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Error");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Failed to generate multiple-choice options: " + e.getMessage());
+                                alert.showAndWait();
+                            });
+                        }
+
+                        Platform.runLater(() -> {
+                            selectedDeck.getFlashcards().add(newFlashcard);
+                            FirebaseRealtimeDB.saveDeck(selectedDeck);
+                        });
+                    }).start();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Missing Information");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Please enter both a question and an answer.");
+                    alert.showAndWait();
+                }
+            }
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("No Deck Selected");
@@ -116,51 +166,6 @@ public class FlashcardsController {
             alert.setContentText("Please select a deck to add a flashcard.");
             alert.showAndWait();
         }
-    }
-
-    @FXML
-    private void handleSaveFlashcard() {
-        String question = questionField.getText().trim();
-        String answer = answerArea.getText().trim();
-
-        if (question.isEmpty() || answer.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Missing Information");
-            alert.setHeaderText(null);
-            alert.setContentText("Please enter both a question and an answer.");
-            alert.showAndWait();
-            return;
-        }
-
-        Flashcard newFlashcard = new Flashcard(question, answer);
-
-        //Using multithreading to not block any other functionality
-        new Thread(() -> {
-            try {
-                List<String> options = OpenAIAPIController.generateMultipleChoiceOptions(question, answer);
-                if (options != null && !options.isEmpty()) {
-                    newFlashcard.setOptions(options);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Error");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Failed to generate multiple-choice options: " + e.getMessage());
-                    alert.showAndWait();
-                });
-            }
-
-            Platform.runLater(() -> {
-                selectedDeck.getFlashcards().add(newFlashcard);
-                FirebaseRealtimeDB.saveDeck(selectedDeck);
-                
-                flashcardEditorVBox.setVisible(false);
-                questionField.clear();
-                answerArea.clear();
-            });
-        }).start();
     }
 
     @FXML
@@ -179,15 +184,6 @@ public class FlashcardsController {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 selectedDeck.getFlashcards().remove(selectedFlashcard);
                 flashcardsListView.getSelectionModel().clearSelection();
-                if (flashcardEditorVBox != null) {
-                    flashcardEditorVBox.setVisible(false);
-                }
-                if (questionField != null) {
-                    questionField.clear();
-                }
-                if (answerArea != null) {
-                    answerArea.clear();
-                }
                 FirebaseRealtimeDB.saveDeck(selectedDeck);
             }
         } else if (selectedDeck != null) {
@@ -203,15 +199,6 @@ public class FlashcardsController {
                 FirebaseRealtimeDB.deleteDeck(selectedDeck);
                 decksListView.getSelectionModel().clearSelection();
                 flashcardsListView.setItems(null);
-                if (flashcardEditorVBox != null) {
-                    flashcardEditorVBox.setVisible(false);
-                }
-                if (questionField != null) {
-                    questionField.clear();
-                }
-                if (answerArea != null) {
-                    answerArea.clear();
-                }
             }
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
