@@ -9,6 +9,7 @@ import java.util.Properties;
 import java.util.Scanner;
 import org.json.JSONObject;
 import java.util.logging.Logger;
+import java.nio.charset.StandardCharsets;
 
 public class FirebaseAuthService {
     private static final Logger logger = Logger.getLogger(FirebaseAuthService.class.getName());
@@ -47,51 +48,67 @@ public class FirebaseAuthService {
      * Logs in a user with the given email and password.
      */
     public static boolean login(String email, String password) {
+        String firebaseUrl = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + API_KEY;
+
         try {
-            // Initialize Firebase first
-            FirebaseConnection.initialize();
-
-            // Create JSON payload
-            JSONObject payload = new JSONObject();
-            payload.put("email", email);
-            payload.put("password", password);
-            payload.put("returnSecureToken", true);
-
-            // Make HTTP request
-            URL url = new URL(SIGN_IN_URL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            // Create connection
+            URI uri = new URI(firebaseUrl);
+            HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
 
-            // Send the request
-            OutputStream os = conn.getOutputStream();
-            os.write(payload.toString().getBytes());
-            os.flush();
-            os.close();
+            // Create payload
+            String payload = String.format(
+                    "{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}",
+                    email, password
+            );
 
-            // Read response
-            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder response = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
+            // Send request
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = payload.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
             }
 
-            // Parse response
+            // Check response code first
+            int responseCode = conn.getResponseCode();
+            logger.info("Login response code: " + responseCode);
+
+            // Read the response (error or success)
+            StringBuilder response = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                            responseCode >= 400 ? conn.getErrorStream() : conn.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+            }
+
+            // Log the full response for debugging
+            logger.info("Login response: " + response.toString());
+
+            if (responseCode >= 400) {
+                JSONObject errorResponse = new JSONObject(response.toString());
+                String errorMessage = errorResponse.getJSONObject("error").getString("message");
+                logger.severe("Login failed with error: " + errorMessage);
+                throw new RuntimeException("Login failed: " + errorMessage);
+            }
+
+            // Parse successful response
             JSONObject jsonResponse = new JSONObject(response.toString());
-            System.out.println("Login successful: " + jsonResponse.toString(2));
-
-            // Set the user ID in FirebaseRealtimeDB
             String localId = jsonResponse.getString("localId");
+            
+            logger.info("Login successful for user: " + localId);
             FirebaseRealtimeDB.setCurrentUser(localId);
-
-            reader.close();
-            conn.disconnect();
-
+            
             return true;
+
         } catch (Exception e) {
             logger.severe("Login failed: " + e.getMessage());
+            if (e instanceof RuntimeException) {
+                throw (RuntimeException) e;
+            }
             throw new RuntimeException("Login failed", e);
         }
     }

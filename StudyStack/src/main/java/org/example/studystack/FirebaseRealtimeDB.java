@@ -293,35 +293,28 @@ public class FirebaseRealtimeDB {
     }
 
     private static void loadUserData() {
-        if (currentUserUid == null) return;
-
+        logger.info("Loading user data for: " + currentUserUid);
+        
         // Load notes
         DatabaseReference userNotesRef = database.child("users").child(currentUserUid).child("notes");
         userNotesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 Platform.runLater(() -> {
-                    Map<String, Note> existingNotes = new HashMap<>();
-                    DataStore.getInstance().getNotesList().forEach(note -> 
-                        existingNotes.put(note.getTitle(), note));
-
+                    // Clear existing notes before loading
+                    DataStore.getInstance().getNotesList().clear();
+                    
                     for (DataSnapshot noteSnapshot : snapshot.getChildren()) {
                         String title = noteSnapshot.child("title").getValue(String.class);
                         String content = noteSnapshot.child("content").getValue(String.class);
-                        if (title != null && content != null) {
-                            Note existingNote = existingNotes.get(title);
-                            if (existingNote != null) {
-                                // Only update if content is different
-                                if (!content.equals(existingNote.getContent())) {
-                                    existingNote.setContent(content);
-                                }
-                            } else {
-                                // Add new note
-                                Note newNote = new Note(title, content);
-                                DataStore.getInstance().getNotesList().add(newNote);
-                            }
+                        
+                        if (title != null) {
+                            Note note = new Note(title, content != null ? content : "");
+                            DataStore.getInstance().getNotesList().add(note);
+                            logger.info("Loaded note: " + title);
                         }
                     }
+                    logger.info("Loaded " + DataStore.getInstance().getNotesList().size() + " notes");
                 });
             }
 
@@ -346,15 +339,12 @@ public class FirebaseRealtimeDB {
                         if (name != null) {
                             Deck existingDeck = existingDecks.get(name);
                             if (existingDeck == null) {
-                                // Create new deck
                                 existingDeck = new Deck(name);
                                 DataStore.getInstance().getDecksList().add(existingDeck);
                             }
                             
-                            // Clear existing flashcards
                             existingDeck.getFlashcards().clear();
                             
-                            // Load flashcards
                             DataSnapshot flashcardsSnapshot = deckSnapshot.child("flashcards");
                             for (DataSnapshot cardSnapshot : flashcardsSnapshot.getChildren()) {
                                 String question = cardSnapshot.child("question").getValue(String.class);
