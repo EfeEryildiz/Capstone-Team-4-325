@@ -35,7 +35,7 @@ public class NotebookController {
 
     private Note currentNote = null;
 
-    private static final long SAVE_DELAY_MS = 1000; // 1 second delay
+    private static final long SAVE_DELAY_MS = 200;
     private Timer saveTimer = new Timer(true);
     private TimerTask pendingSave = null;
     private String lastSavedContent = "";
@@ -51,61 +51,34 @@ public class NotebookController {
         // Initialize Firebase at startup
         FirebaseRealtimeDB.initialize();
         
-        //Bind the ListView to the notes list from DataStore
         notesListView.setItems(DataStore.getInstance().getNotesList());
         notesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
-        noteTextArea.setDisable(true); //Have notes area disabled before note creation
+        noteTextArea.setDisable(true);
         convertToFlashcardsButton.setDisable(true);
 
-        //Selection changes handling
-        notesListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (!isUpdatingTextArea) {
-                List<Note> selectedNotes = notesListView.getSelectionModel().getSelectedItems();
-                if (!selectedNotes.isEmpty()) {
-                    currentNote = selectedNotes.get(selectedNotes.size() - 1); //Last selected note
-                    isUpdatingTextArea = true;
-                    noteTextArea.setText(currentNote.getContent());
-                    noteTextArea.setDisable(false);
-                    convertToFlashcardsButton.setDisable(false);
-                    isUpdatingTextArea = false;
-                } else {
-                    noteTextArea.clear();
-                    noteTextArea.setDisable(true);
-                    convertToFlashcardsButton.setDisable(true);
-                }
-            }
-        });
-
-        // Preserve caret position when typing
-        noteTextArea.caretPositionProperty().addListener((observable, oldValue, newValue) -> {
-            if (!isLoadingData) {
-                lastCaretPosition = newValue.intValue();
-            }
-        });
-
-        // Modify the text property listener
-        noteTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!isUpdatingTextArea && currentNote != null && !ignoreNextUpdate) {
-                currentNote.setContent(newValue);
-                lastSavedContent = newValue;
-                scheduleSave();
-            }
-            ignoreNextUpdate = false;
-        });
-
-        // Modify the selection listener
+        // Selection changes handling
         notesListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (!isUpdatingTextArea && newValue != null) {
-                if (oldValue != null) {
-                    saveCurrentNote();
-                }
                 currentNote = newValue;
                 isUpdatingTextArea = true;
                 noteTextArea.setText(newValue.getContent());
+                noteTextArea.setDisable(false);
+                convertToFlashcardsButton.setDisable(false);
                 lastSavedContent = newValue.getContent();
                 isUpdatingTextArea = false;
             }
+        });
+
+        // Text change listener
+        noteTextArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!isUpdatingTextArea && currentNote != null && !ignoreNextUpdate) {
+                isUpdatingTextArea = true;
+                currentNote.setContent(newValue);
+                scheduleSave();
+                isUpdatingTextArea = false;
+            }
+            ignoreNextUpdate = false;
         });
     }
 
@@ -117,16 +90,29 @@ public class NotebookController {
         pendingSave = new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    if (currentNote != null && !currentNote.getContent().equals(lastSavedContent)) {
-                        FirebaseRealtimeDB.saveNote(currentNote);
-                        lastSavedContent = currentNote.getContent();
-                    }
-                });
+                if (currentNote != null && !currentNote.getContent().equals(lastSavedContent)) {
+                    Platform.runLater(() -> {
+                        try {
+                            String currentContent = currentNote.getContent();
+                            if (currentContent != null && !currentContent.equals(lastSavedContent)) {
+                                int caretPosition = noteTextArea.getCaretPosition();
+                                // Store the current note reference to prevent it from being cleared
+                                Note noteToSave = currentNote;
+                                FirebaseRealtimeDB.saveNote(noteToSave);
+                                if (currentNote == noteToSave) {  // Only update if we're still on the same note
+                                    lastSavedContent = currentContent;
+                                    noteTextArea.positionCaret(caretPosition);
+                                }
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
             }
         };
         
-        saveTimer.schedule(pendingSave, SAVE_DELAY_MS);
+        saveTimer.schedule(pendingSave, 1000);
     }
 
     private void saveCurrentNote() {
