@@ -187,8 +187,17 @@ public class FirebaseRealtimeDB {
     public static void saveDeck(Deck deck) {
         logger.info("Attempting to save deck: " + deck.getName());
         
+        // Try to reinitialize if not properly connected
+        if (!isInitialized || !isAuthInitialized) {
+            logger.info("Attempting to reinitialize Firebase connection...");
+            initialize();
+            if (currentUserUid != null) {
+                initializeAuth(currentUserUid);
+            }
+        }
+
         if (!checkAuthentication() || !ensureInitialized()) {
-            logger.warning("Cannot save deck: Database not initialized or user not logged in" +
+            logger.severe("Cannot save deck: Database not initialized or user not logged in" +
                          " (User: " + currentUserUid + 
                          ", Auth Init: " + isAuthInitialized + 
                          ", DB Init: " + isInitialized + ")");
@@ -210,40 +219,55 @@ public class FirebaseRealtimeDB {
                 flashcardsData.add(cardData);
             }
             deckData.put("flashcards", flashcardsData);
-
-            // Add debug logging
+            
             logger.info("Deck data to save: " + deckData.toString());
 
-            userDecksRef.child(deck.getName()).setValue(deckData, (error, ref) -> {
-                if (error == null) {
-                    logger.info("Deck saved successfully to: " + ref.getPath().toString());
-                } else {
-                    logger.severe("Failed to save deck: " + error.getMessage() + 
-                                "\nDetails: " + error.getDetails() +
-                                "\nCode: " + error.getCode());
-                    // Add stack trace for more context
-                    error.toException().printStackTrace();
-                }
-            });
-
-            // Add completion listener to database reference
-            userDecksRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            // Add connection status check
+            DatabaseReference connectedRef = database.child(".info/connected");
+            connectedRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
-                    logger.info("Database updated. Current data at " + snapshot.getRef().getPath() + ": " + snapshot.getValue());
+                    boolean connected = snapshot.getValue(Boolean.class);
+                    logger.info("Firebase connection status: " + (connected ? "Connected" : "Disconnected"));
+                    
+                    if (connected) {
+                        // Save the deck with completion callback
+                        userDecksRef.child(deck.getName()).setValue(deckData, (error, ref) -> {
+                            if (error == null) {
+                                logger.info("Deck saved successfully to: " + ref.getPath().toString());
+                            } else {
+                                logger.severe("Failed to save deck: " + error.getMessage() + 
+                                            "\nDetails: " + error.getDetails() +
+                                            "\nCode: " + error.getCode());
+                                error.toException().printStackTrace();
+                            }
+                        });
+                    } else {
+                        logger.severe("Cannot save deck: Firebase is disconnected");
+                        // Try to reconnect
+                        initialize();
+                    }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError error) {
-                    logger.severe("Database operation cancelled: " + error.getMessage() + 
-                                "\nDetails: " + error.getDetails() +
-                                "\nCode: " + error.getCode());
+                    logger.severe("Error checking connection: " + error.getMessage());
                 }
             });
 
         } catch (Exception e) {
             logger.severe("Error saving deck: " + e.getMessage());
             e.printStackTrace();
+            
+            // Try to recover the connection
+            try {
+                initialize();
+                if (currentUserUid != null) {
+                    initializeAuth(currentUserUid);
+                }
+            } catch (Exception reinitError) {
+                logger.severe("Failed to recover Firebase connection: " + reinitError.getMessage());
+            }
         }
     }
 
@@ -351,5 +375,24 @@ public class FirebaseRealtimeDB {
                 logger.severe("Failed to load decks: " + error.getMessage());
             }
         });
+    }
+
+    public static void clearUser() {
+        logger.info("Clearing Firebase user state");
+        currentUserUid = null;
+        isAuthInitialized = false;
+        
+        // Remove any existing listeners
+        if (database != null) {
+            DatabaseReference userRef = database.child("users");
+            userRef.removeEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {}
+                @Override
+                public void onCancelled(DatabaseError error) {}
+            });
+        }
+        
+        logger.info("Firebase user state cleared");
     }
 }

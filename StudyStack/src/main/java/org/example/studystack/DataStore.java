@@ -32,9 +32,12 @@ public class DataStore {
     }
 
     public void signOut() {
-        // Clear any user data
-        currentUserEmail = null;
-        // Clear other data as needed
+        // Clear local data
+        notesList.clear();
+        decksList.clear();
+        
+        // Clear Firebase state
+        FirebaseRealtimeDB.clearUser();
     }
 
     public String getCurrentUserEmail() {
