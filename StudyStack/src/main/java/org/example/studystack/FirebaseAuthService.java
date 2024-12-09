@@ -33,7 +33,6 @@ public class FirebaseAuthService {
                 throw new RuntimeException("Firebase API key not found in config.properties");
             }
             
-            // Remove the hardcoded "your-api-key" and use the one from config.properties
             SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + API_KEY;
             logger.info("Firebase Auth Service initialized successfully with API key from config.properties");
             

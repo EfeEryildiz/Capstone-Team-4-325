@@ -105,8 +105,7 @@ public class FirebaseRealtimeDB {
     }
 
     public static void setCurrentUser(String uid) {
-        logger.info("Setting current user: " + uid + " (called from: " + 
-            Thread.currentThread().getStackTrace()[2].getClassName() + ")");
+        logger.info("Setting current user: " + uid);
         
         if (uid == null) {
             logger.warning("Attempted to set null user ID");
@@ -114,7 +113,14 @@ public class FirebaseRealtimeDB {
         }
 
         try {
-            // Always initialize Firebase first
+            // Clear existing data from DataStore when switching users
+            Platform.runLater(() -> {
+                DataStore.getInstance().getNotesList().clear();
+                DataStore.getInstance().getDecksList().clear();
+                logger.info("Cleared local data for user switch");
+            });
+
+            // Initialize Firebase
             initialize();
             
             if (!isInitialized) {
@@ -122,7 +128,7 @@ public class FirebaseRealtimeDB {
                 return;
             }
             
-            // Then initialize auth
+            // Initialize auth with new user
             initializeAuth(uid);
             
             // Verify initialization was successful
@@ -131,9 +137,18 @@ public class FirebaseRealtimeDB {
                 return;
             }
             
-            logger.info("Current user set successfully: " + uid + 
-                       " (Auth Initialized: " + isAuthInitialized + 
-                       ", DB Initialized: " + isInitialized + ")");
+            logger.info("Successfully set current user and initialized auth");
+            
+            // Load the new user's data
+            Platform.runLater(() -> {
+                try {
+                    loadUserData();
+                    logger.info("Loaded data for new user: " + uid);
+                } catch (Exception e) {
+                    logger.severe("Error loading user data: " + e.getMessage());
+                }
+            });
+            
         } catch (Exception e) {
             logger.severe("Error setting current user: " + e.getMessage());
             e.printStackTrace();
@@ -188,10 +203,7 @@ public class FirebaseRealtimeDB {
         logger.info("Attempting to save deck: " + deck.getName());
         
         if (!checkAuthentication() || !ensureInitialized()) {
-            logger.warning("Cannot save deck: Database not initialized or user not logged in" +
-                         " (User: " + currentUserUid + 
-                         ", Auth Init: " + isAuthInitialized + 
-                         ", DB Init: " + isInitialized + ")");
+            logger.warning("Cannot save deck: Database not initialized or user not logged in");
             return;
         }
 
@@ -210,32 +222,15 @@ public class FirebaseRealtimeDB {
                 flashcardsData.add(cardData);
             }
             deckData.put("flashcards", flashcardsData);
-
-            // Add debug logging
+            
             logger.info("Deck data to save: " + deckData.toString());
 
+            // Save directly without the test write
             userDecksRef.child(deck.getName()).setValue(deckData, (error, ref) -> {
                 if (error == null) {
                     logger.info("Deck saved successfully to: " + ref.getPath().toString());
                 } else {
                     logger.severe("Failed to save deck: " + error.getMessage() + 
-                                "\nDetails: " + error.getDetails() +
-                                "\nCode: " + error.getCode());
-                    // Add stack trace for more context
-                    error.toException().printStackTrace();
-                }
-            });
-
-            // Add completion listener to database reference
-            userDecksRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    logger.info("Database updated. Current data at " + snapshot.getRef().getPath() + ": " + snapshot.getValue());
-                }
-
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    logger.severe("Database operation cancelled: " + error.getMessage() + 
                                 "\nDetails: " + error.getDetails() +
                                 "\nCode: " + error.getCode());
                 }
